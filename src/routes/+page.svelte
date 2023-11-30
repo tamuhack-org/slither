@@ -1,39 +1,39 @@
 
 <script lang="ts">
-    import { Html5QrcodeScanner, Html5Qrcode, Html5QrcodeScanType } from "html5-qrcode";
+    import { Html5QrcodeScanner, Html5QrcodeScanType, type Html5QrcodeResult } from "html5-qrcode";
+    import type { Html5QrcodeScannerConfig } from "html5-qrcode/esm/html5-qrcode-scanner";
 
-    function onScanSuccess(decodedText, decodedResult) {
-    // handle the scanned code as you like, for example:
-    console.log(`Code matched = ${decodedText}`, decodedResult);
+    function onScanSuccess(decodedText: string, decodedResult: Html5QrcodeResult) {
+        console.log(decodedText);
     }
 
-    function onScanError(errorMessage) {
-    // handle scan error, usually better to ignore and keep scanning.
-    console.log(`Error = ${errorMessage}`);
+    function onScanError(errorMessage: string) {
+        // Called literally every frame that no QR code is found lol
+        // console.log(errorMessage);
     }
 
-    let config = {
-    fps: 10,
-    qrbox: {width: 100, height: 100},
-    rememberLastUsedCamera: true,
-    // Only support camera scan type.
-    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+    let config: Html5QrcodeScannerConfig = {
+        fps: 10,
+        qrbox: {width: 300, height: 300},
+        rememberLastUsedCamera: true,
+        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
     };
 
     function makeScanner() {
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-    "reader", config, /* verbose= */ false);
-    html5QrcodeScanner.render(onScanSuccess, onScanError);
-    console.log("Scanner created");
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", config, /* verbose= */ false);
+        html5QrcodeScanner.render(onScanSuccess, onScanError);
     }
+
+    let scannerOpen = false;
 </script>
 
-
-<h1>Slither</h1>
-
-<button on:click={makeScanner}>Start</button>
-
-<div id="reader"></div>
-
-
+<div>
+    <h1>Slither</h1>
+    
+    {#if !scannerOpen}
+        <button on:click={() => {scannerOpen = true; makeScanner();}}>Start</button>
+    {/if}
+    
+    <div id="reader" class="w-full max-w-lg"></div>
+</div>
 
