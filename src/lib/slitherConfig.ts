@@ -1,15 +1,5 @@
 
-export type scanningForType = "Check-in" | "Workshop" | "Meal";
-
-// export const scanningForOptions: {name: string, type: scanningForType}[] = [
-//     {name: "Check-in", type: "Check-in"},
-//     {name: "Workshop", type: "Workshop"},
-//     {name: "Lunch (Saturday)", type: "Meal"},
-//     {name: "Dinner (Saturday)", type: "Meal"},
-//     {name: "Midnight Snack", type: "Meal"},
-//     {name: "Breakfast (Sunday)", type: "Meal"},
-//     {name: "Lunch (Sunday)", type: "Meal"},
-// ];
+import type { scanningForType } from "./slitherTypes";
 
 export const scanningForOptions: {[name: string]: scanningForType} = {
     "Check-in": "Check-in",
@@ -19,4 +9,9 @@ export const scanningForOptions: {[name: string]: scanningForType} = {
     "Midnight Snack": "Meal",
     "Breakfast (Sunday)": "Meal",
     "Lunch (Sunday)": "Meal",
+};
+
+export const suspiciousLastScanWindows = {
+    "Workshop": 1000 * 60 * 15,  // 15 minutes
+    "Meal": 1000 * 60 * 60 * 2,  // 2 hours
 };

@@ -10,7 +10,15 @@ export default {
         wiggle: {
           '0%, 100%': { left: '-20px' },
           '50%': { left: '20px' },
-        }
+        },
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+        popIn: {
+          '0%': { transform: 'scale(0)' },
+          '100%': { transform: 'scale(1)' },
+        },
       },
       animation: {
         wiggle0: 'wiggle 1s ease-in-out 0.05s infinite',
@@ -23,6 +31,8 @@ export default {
         wiggle7: 'wiggle 1s ease-in-out 0.4s infinite',
         wiggle8: 'wiggle 1s ease-in-out 0.45s infinite',
         wiggle9: 'wiggle 1s ease-in-out 0.5s infinite',
+        fadeIn: 'fadeIn 0.1s',
+        popIn: 'popIn 0.2s',
       }
     },
   },

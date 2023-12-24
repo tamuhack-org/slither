@@ -1,21 +1,30 @@
 
 <script lang="ts">
     import Scanner from "$lib/scanner.svelte";
-    import type { ObosQRCode } from "$lib/slitherTypes";
+    import { getUnfetchedParticipant, type ObosQRCode, type Participant } from "$lib/slitherTypes";
     import { scanningForOptions } from "$lib/slitherConfig";
     import { LogOutIcon } from "svelte-feather-icons";
+    import ScanModal from "$lib/scanModal.svelte";
     
     let temp_loggedIn = true;
     let selectedScanningForOption = Object.keys(scanningForOptions)[0];
+    let modalOpen = false;
+    let scannedParticipant: Participant | null = null;
 
     function onScanGood(obosQRCode: ObosQRCode) {
-        console.log(obosQRCode);
+        scannedParticipant = getUnfetchedParticipant(obosQRCode);
+        modalOpen = true;
+        // await fetch etc etc etc
+        if (obosQRCode.email === scannedParticipant.email)  // in case the fetch took so long that the user scanned another QR code
+        {
+            // update scannedParticipant
+        }
     }
 
     function onScanBad() {
-        console.log("bad");
+        scannedParticipant = null;
+        modalOpen = true;
     }
-
     
 </script>
 
@@ -36,7 +45,7 @@
 
     <div class="mb-10">
         <h3 class="text-2xl text-center mb-2"><label for="scanningfor-select">Scanning for...</label></h3>
-        <select bind:value={selectedScanningForOption} class="text-2xl mx-auto rounded-md border-2 border-zinc-700 block" id="scanningfor-select">
+        <select bind:value={selectedScanningForOption} class="text-2xl px-1 mx-auto rounded-md border-2 border-zinc-700 block" id="scanningfor-select">
             {#each Object.keys(scanningForOptions) as option}
                 <option value={option}>{option}</option>
             {/each}
@@ -45,3 +54,5 @@
     
     <Scanner {onScanGood} {onScanBad} />
 </div>
+
+<ScanModal bind:modalOpen participant={scannedParticipant} />
