@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host 0.0.0.0",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -28,6 +28,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"html5-qrcode": "^2.3.8"
+		"html5-qrcode": "^2.3.8",
+		"svelte-feather-icons": "^4.1.0"
 	}
 }

@@ -1,67 +1,47 @@
 
 <script lang="ts">
-    import { Html5QrcodeScanner, Html5QrcodeScanType, type Html5QrcodeResult } from "html5-qrcode";
-    import type { Html5QrcodeScannerConfig } from "html5-qrcode/esm/html5-qrcode-scanner";
+    import Scanner from "$lib/scanner.svelte";
+    import type { ObosQRCode } from "$lib/slitherTypes";
+    import { scanningForOptions } from "$lib/slitherConfig";
+    import { LogOutIcon } from "svelte-feather-icons";
+    
+    let temp_loggedIn = true;
+    let selectedScanningForOption = Object.keys(scanningForOptions)[0];
 
-    type ObosQRCode = {
-        first_name: string;
-        last_name: string;
-        email: string;
-        university: string;
-    };
-
-    function getObosQRCode(decodedText: string): ObosQRCode | null {
-        try {
-            const decoded = JSON.parse(decodedText);
-            if (decoded.first_name && decoded.last_name && decoded.email && decoded.university) {
-                return decoded;
-            }
-        } catch (e) {
-            return null;
-        }
-        return null;
+    function onScanGood(obosQRCode: ObosQRCode) {
+        console.log(obosQRCode);
     }
 
-    function onScanSuccess(decodedText: string, decodedResult: Html5QrcodeResult) {
-        console.log(decodedText);
-        const obosQRCode = getObosQRCode(decodedText);
-        if (obosQRCode)
-        {
-            alert(`Welcome ${obosQRCode.first_name} ${obosQRCode.last_name} from ${obosQRCode.university}!`);
-        }
-        else
-        {
-            alert("Invalid QR Code");
-        }
+    function onScanBad() {
+        console.log("bad");
     }
 
-    function onScanError(errorMessage: string) {
-        // Called literally every frame that no QR code is found lol
-        // console.log(errorMessage);
-    }
-
-    let config: Html5QrcodeScannerConfig = {
-        fps: 10,
-        qrbox: {width: 300, height: 300},
-        rememberLastUsedCamera: true,
-        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-    };
-
-    function makeScanner() {
-        const html5QrcodeScanner = new Html5QrcodeScanner("reader", config, /* verbose= */ false);
-        html5QrcodeScanner.render(onScanSuccess, onScanError);
-    }
-
-    let scannerOpen = false;
+    
 </script>
 
 <div>
-    <h1 class="text-8xl text-center font-bold">Slither</h1>
-    <h2 class="text-3xl text-center font-semibold mb-28">QR Code Scanner</h2>
-    
-    {#if !scannerOpen}
-        <button class="text-4xl border-4 border-black rounded-xl p-2 mx-auto block" on:click={() => {scannerOpen = true; makeScanner();}}>Start Scanning</button>
+    {#if !temp_loggedIn}
+        <h1 class="text-8xl text-center font-bold">Slither</h1>
+        <h2 class="text-3xl text-center font-semibold mb-28">QR Code Scanner</h2>
+    {:else}
+        <div class="grid grid-cols-3">
+            <span></span>
+            <h1 class="text-4xl text-center font-bold">Slither</h1>
+            <button class="ml-auto mr-1">
+                <LogOutIcon size="36" />
+            </button>
+        </div>
+        <hr class="border border-zinc-300 mb-5" />
     {/if}
+
+    <div class="mb-10">
+        <h3 class="text-2xl text-center mb-2"><label for="scanningfor-select">Scanning for...</label></h3>
+        <select bind:value={selectedScanningForOption} class="text-2xl mx-auto rounded-md border-2 border-zinc-700 block" id="scanningfor-select">
+            {#each Object.keys(scanningForOptions) as option}
+                <option value={option}>{option}</option>
+            {/each}
+        </select>
+    </div>
     
-    <div id="reader" class="w-full max-w-2xl mx-auto"></div>
+    <Scanner {onScanGood} {onScanBad} />
 </div>
