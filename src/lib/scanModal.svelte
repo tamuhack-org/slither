@@ -5,6 +5,7 @@
 
 	export let modalOpen: boolean;
     export let participant: Participant | null;
+    export let selectedScanningForOption: string;
 
 </script>
 
@@ -19,8 +20,8 @@
                     <p>¯\_(ツ)_/¯</p>
                 </div>
             {:else}
-                <p>{participant.firstName}</p>
-                <p>{participant.lastName}</p>
+                <p class="text-2xl font-semibold">{participant.firstName}</p>
+                <p class="text-2xl font-semibold">{participant.lastName}</p>
                 <p>{participant.email}</p>
             {/if}
         </div>

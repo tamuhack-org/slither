@@ -11,17 +11,28 @@
     let modalOpen = false;
     let scannedParticipant: Participant | null = null;
 
-    function onScanGood(obosQRCode: ObosQRCode) {
+    async function onScanGood(obosQRCode: ObosQRCode) {
+        if (modalOpen) {
+            return;
+        }
+
         scannedParticipant = getUnfetchedParticipant(obosQRCode);
         modalOpen = true;
         // await fetch etc etc etc
-        if (obosQRCode.email === scannedParticipant.email)  // in case the fetch took so long that the user scanned another QR code
-        {
+        const urlParams = new URLSearchParams({ email: obosQRCode.email });
+        const response = await fetch("/api/participant/checkin?" + urlParams.toString());
+        const data = await response.json();
+        console.log(data);
+        if (obosQRCode.email === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
             // update scannedParticipant
         }
     }
 
     function onScanBad() {
+        if (modalOpen) {
+            return;
+        }
+
         scannedParticipant = null;
         modalOpen = true;
     }
@@ -55,4 +66,4 @@
     <Scanner {onScanGood} {onScanBad} />
 </div>
 
-<ScanModal bind:modalOpen participant={scannedParticipant} />
+<ScanModal bind:modalOpen participant={scannedParticipant} {selectedScanningForOption} />

@@ -24,14 +24,10 @@
     }
 
     function onScanSuccess(decodedText: string, decodedResult: Html5QrcodeResult) {
-        console.log(decodedText);
         const obosQRCode = getObosQRCode(decodedText);
-        if (obosQRCode)
-        {
+        if (obosQRCode) {
             onScanGood(obosQRCode);
-        }
-        else
-        {
+        } else {
             onScanBad();
         }
     }
