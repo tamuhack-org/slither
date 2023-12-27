@@ -36,6 +36,7 @@ export type Participant = {
     university: string;
 
     infoFetched: boolean;
+    failedToFetch: boolean;
     checkinStatus: CheckinStatus;
     lastWorkshopScan: Date;
     lastMealScan: Date;
@@ -50,11 +51,12 @@ export function getUnfetchedParticipant(qrCode: ObosQRCode): Participant {
         university: qrCode.university,
 
         infoFetched: false,
-        checkedIn: false,
+        failedToFetch: false,
+        checkinStatus: "Under Review",
         lastWorkshopScan: new Date(0),
         lastMealScan: new Date(0),
         dietaryRestrictions: "",
     };
 }
 
-export type scanningForType = "Check-in" | "Workshop" | "Meal";
+export type ScanningForType = "Check-in" | "Workshop" | "Meal";
