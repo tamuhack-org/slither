@@ -12,32 +12,73 @@
     let modalOpen = false;
     let scannedParticipant: Participant | null = null;
 
-    async function onScanGood(obosQRCode: ObosQRCode) {
+    async function fetchCheckin() {
+        if (scannedParticipant === null) {
+            return;
+        }
+
+        const urlParams = new URLSearchParams({ email: scannedParticipant.email });
+        const participantEmail = scannedParticipant.email;
+
+        const response = await fetch("/api/participant/checkin?" + urlParams.toString());
+        const responseData = await response.json();
+
+        if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
+            scannedParticipant.checkinStatus = responseData.checkinStatus;
+        }
+    }
+
+    async function fetchMeal() {
+        if (scannedParticipant === null) {
+            return;
+        }
+
+        const urlParams = new URLSearchParams({ email: scannedParticipant.email });
+        const participantEmail = scannedParticipant.email;
+
+        const response = await fetch("/api/participant/meal?" + urlParams.toString());
+        const responseData = await response.json();
+
+        if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
+            scannedParticipant.mealScans = responseData.mealScans;
+            scannedParticipant.dietaryRestrictions = responseData.dietaryRestrictions;
+        }
+    }
+
+    async function fetchWorkshop() {
+        // TODO
+    }
+
+    async function fetchScannedParticipantInfo() {
+        if (scannedParticipant === null) {
+            return;
+        }
+
+        scannedParticipant.infoFetched = false;
+        
+        try {
+            if (selectedScanningForType === "Check-in") {
+                await fetchCheckin();
+            } else if (selectedScanningForType === "Meal") {
+                await Promise.all([fetchCheckin(), fetchMeal()]);
+            } else if (selectedScanningForType === "Workshop") {
+                await Promise.all([fetchCheckin(), fetchWorkshop()]);
+            }
+            scannedParticipant.infoFetched = true;
+        } catch (error) {
+            console.error(error);
+            scannedParticipant.failedToFetch = true;
+        }
+    }
+
+    function onScanGood(obosQRCode: ObosQRCode) {
         if (modalOpen) {
             return;
         }
 
         scannedParticipant = getUnfetchedParticipant(obosQRCode);
         modalOpen = true;
-        const urlParams = new URLSearchParams({ email: obosQRCode.email });
-        try {
-            if (selectedScanningForType === "Check-in") {
-                const response = await fetch("/api/participant/checkin?" + urlParams.toString());
-                const responseData = await response.json();
-
-                if (obosQRCode.email === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
-                    scannedParticipant.checkinStatus = responseData.checkinStatus;
-                    scannedParticipant.infoFetched = true;
-                }
-            } else if (selectedScanningForType === "Meal") {
-                // TODO
-            } else if (selectedScanningForType === "Workshop") {
-                // TODO
-            }
-        } catch (error) {
-            console.error(error);
-            scannedParticipant.failedToFetch = true;
-        }
+        fetchScannedParticipantInfo();
     }
 
     function onScanBad() {
@@ -77,8 +118,8 @@
     
     <Scanner {onScanGood} {onScanBad} />
 
-    <button on:click={() => {modalOpen = true;}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">Re-open Last Scan</button>
+    <button on:click={() => {modalOpen = true; fetchScannedParticipantInfo();}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">Re-open Last Scan</button>
     <button on:click={() => {alert("todo :)")}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">History</button>
 </div>
 
-<ScanModal bind:modalOpen {scannedParticipant} {selectedScanningForType} />
+<ScanModal bind:modalOpen {scannedParticipant} {selectedScanningForOption} {selectedScanningForType} />

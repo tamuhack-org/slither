@@ -1,11 +1,12 @@
 
 <script lang="ts">
     import { scanningForOptions } from "./slitherConfig";
-    import type { Participant, ScanningForType } from "./slitherTypes";
+    import { getMealCode, type Participant, type ScanningForType } from "./slitherTypes";
     import { LoaderIcon, XIcon } from "svelte-feather-icons";
 
 	export let modalOpen: boolean;
     export let scannedParticipant: Participant | null;
+    export let selectedScanningForOption: string;
     export let selectedScanningForType: ScanningForType;
 
     let checkinFetching = false;
@@ -91,8 +92,17 @@
                             {/if}
                         </button>
                     {:else if selectedScanningForType === "Meal"}
-                        <p>Last meal scan: {scannedParticipant.lastMealScan}</p>
-                        <p>Dietary restrictions: {scannedParticipant.dietaryRestrictions}</p>
+                        {#if scannedParticipant.mealScans.includes(getMealCode(selectedScanningForOption))}
+                            <p class="font-bold text-xl text-red-700 mt-4">Participant has already scanned for this meal ⚠</p>
+                        {:else}
+                            <p class="mt-4">No scan for this meal yet</p>
+                        {/if}
+                        {#if scannedParticipant.dietaryRestrictions === "[]"}
+                            <p class="mt-4">No dietary restrictions</p>
+                        {:else}
+                            <p class="mt-4">Dietary restrictions: <span class="font-bold">{scannedParticipant.dietaryRestrictions}</span></p>
+                        {/if}
+                        <button>TODO button</button>
                     {:else if selectedScanningForType === "Workshop"}
                         <p>Last workshop scan: {scannedParticipant.lastWorkshopScan}</p>
                     {/if}

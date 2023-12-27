@@ -29,6 +29,27 @@ export function getCheckinStatus(statusChar: string): CheckinStatus {
     }
 }
 
+export type MealCode = "B" | "B2" | "L" | "L2" | "D" | "MS";
+
+export function getMealCode(mealStr: string): MealCode {
+    switch (mealStr) {
+        case "Breakfast (Saturday)":
+            return "B";
+        case "Breakfast (Sunday)":
+            return "B2";
+        case "Lunch (Saturday)":
+            return "L";
+        case "Lunch (Sunday)":
+            return "L2";
+        case "Dinner (Saturday)":
+            return "D";
+        case "Midnight Snack":
+            return "MS";
+        default:
+            throw new Error("Invalid meal string");
+    }
+}
+
 export type Participant = {
     firstName: string;
     lastName: string;
@@ -39,7 +60,7 @@ export type Participant = {
     failedToFetch: boolean;
     checkinStatus: CheckinStatus;
     lastWorkshopScan: Date;
-    lastMealScan: Date;
+    mealScans: MealCode[];
     dietaryRestrictions: string;
 };
 
@@ -54,8 +75,8 @@ export function getUnfetchedParticipant(qrCode: ObosQRCode): Participant {
         failedToFetch: false,
         checkinStatus: "Under Review",
         lastWorkshopScan: new Date(0),
-        lastMealScan: new Date(0),
-        dietaryRestrictions: "",
+        mealScans: [],
+        dietaryRestrictions: "[]",
     };
 }
 
