@@ -67,3 +67,50 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json({ mealScans, dietaryRestrictions });
 };
+
+// POST route to log a meal scan
+// params:
+//     email: string
+//     mealCode: MealCode
+// returns:
+//     nothing
+export const POST: RequestHandler = async ({ url }) => {
+    const email = url.searchParams.get("email");
+    const mealCode = url.searchParams.get("mealCode");
+
+    if (!email) {
+        error(400, "No email provided");
+    }
+    if (!mealCode) {
+        error(400, "No meal code provided");
+    }
+
+    const client = new Client({
+        connectionString: DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false,
+        },
+    });
+    client.connect();
+
+    const query = `
+        INSERT INTO volunteer_foodevent (timestamp, user_id, meal)
+        VALUES (
+            NOW(),
+            (SELECT id FROM user_user WHERE email = $1),
+            $2
+        )
+    `;
+    const values = [email, mealCode];
+
+    try {
+        await client.query(query, values);
+    } catch (err) {
+        console.error("Error querying database", err);
+        error(500, "Error querying database");
+    }
+
+    client.end();
+
+    return json({});
+};

@@ -9,18 +9,26 @@
     export let selectedScanningForOption: string;
     export let selectedScanningForType: ScanningForType;
 
-    let checkinFetching = false;
+    let postFetching = false;
+    let scanDone = false;
+    let lastScannedParticipantEmail: string | null = null;
+    $: {
+        if (scannedParticipant !== null && scannedParticipant.email !== lastScannedParticipantEmail) {
+            lastScannedParticipantEmail = scannedParticipant.email;
+            scanDone = false;
+        }
+    }
 
     // if scanning for checkin, show checkin status
     // if scanning for meal, show last meal scan (highlighting if recent) AND dietary restrictions
     // if scanning for workshop, show last workshop scan (highlighting if recent)
 
     async function checkIn() {
-        if (scannedParticipant === null || checkinFetching) {
+        if (scannedParticipant === null || postFetching || scanDone) {
             return;
         }
 
-        checkinFetching = true;
+        postFetching = true;
         const urlParams = new URLSearchParams({ email: scannedParticipant.email });
         const participantEmail = scannedParticipant.email;
         try {
@@ -31,14 +39,38 @@
 
             if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
                 scannedParticipant.checkinStatus = responseData.checkinStatus;
-                scannedParticipant.infoFetched = true;
+                scanDone = true;
             }
         } catch (error) {
             console.error(error);
             scannedParticipant.failedToFetch = true;
         }
 
-        checkinFetching = false;
+        postFetching = false;
+    }
+
+    async function scanMeal() {
+        if (scannedParticipant === null || postFetching || scanDone) {
+            return;
+        }
+
+        postFetching = true;
+        const urlParams = new URLSearchParams({ email: scannedParticipant.email, mealCode: getMealCode(selectedScanningForOption) });
+        const participantEmail = scannedParticipant.email;
+        try {
+            const response = await fetch("/api/participant/meal?" + urlParams.toString(),
+                { method: "POST" }
+            );
+
+            if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
+                scanDone = true;
+            }
+        } catch (error) {
+            console.error(error);
+            scannedParticipant.failedToFetch = true;
+        }
+
+        postFetching = false;
     }
 
 </script>
@@ -85,7 +117,7 @@
 
                     {#if selectedScanningForType === "Check-in" && scannedParticipant.checkinStatus !== "Checked In"}
                         <button on:click={checkIn} class="block w-full py-2 mt-6 rounded-md bg-blue-400 text-white font-bold text-2xl">
-                            {#if checkinFetching}
+                            {#if postFetching}
                                 <LoaderIcon class="animate-spin mx-auto" size="32" />
                             {:else}
                                 Check In
@@ -102,7 +134,15 @@
                         {:else}
                             <p class="mt-4">Dietary restrictions: <span class="font-bold">{scannedParticipant.dietaryRestrictions}</span></p>
                         {/if}
-                        <button>TODO button</button>
+                        <button on:click={scanMeal} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
+                            {#if postFetching}
+                                <LoaderIcon class="animate-spin mx-auto" size="32" />
+                            {:else if scanDone}
+                                Scan Successful!
+                            {:else}
+                                Scan Meal
+                            {/if}
+                        </button>
                     {:else if selectedScanningForType === "Workshop"}
                         <p>Last workshop scan: {scannedParticipant.lastWorkshopScan}</p>
                     {/if}
