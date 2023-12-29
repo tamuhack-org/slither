@@ -47,7 +47,19 @@
     }
 
     async function fetchWorkshop() {
-        // TODO
+        if (scannedParticipant === null) {
+            return;
+        }
+
+        const urlParams = new URLSearchParams({ email: scannedParticipant.email });
+        const participantEmail = scannedParticipant.email;
+
+        const response = await fetch("/api/participant/workshop?" + urlParams.toString());
+        const responseData = await response.json();
+
+        if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
+            scannedParticipant.lastWorkshopScan = responseData.lastWorkshopScan ? new Date(responseData.lastWorkshopScan) : null;
+        }
     }
 
     async function fetchScannedParticipantInfo() {

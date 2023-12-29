@@ -41,11 +41,11 @@ export const GET: RequestHandler = async ({ url }) => {
         const { status: statusChar, wares: waresCode } = result.rows[0];
         checkinStatus = getCheckinStatus(statusChar);
         wares = getWares(waresCode);
+        client.end();
     } catch (err) {
         console.error("Error querying database", err);
-        error(500, "Error querying database");
-    } finally {
         client.end();
+        error(500, "Error querying database");
     }
 
 	return json({ checkinStatus, wares });
@@ -82,11 +82,12 @@ export const POST: RequestHandler = async ({ url }) => {
 
     try {
         await client.query(query, values);
+        client.end();
     } catch (err) {
         console.error("Error querying database", err);
+        client.end();
         error(500, "Error querying database");
     }
-    client.end();
 
     return json({ checkinStatus: "Checked In" as CheckinStatus });
 };

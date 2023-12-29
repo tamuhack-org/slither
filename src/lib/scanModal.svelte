@@ -2,6 +2,8 @@
 <script lang="ts">
     import { getMealCode, type Participant, type ScanningForType } from "./slitherTypes";
     import { LoaderIcon, XIcon } from "svelte-feather-icons";
+    import { formatDistanceToNow } from "date-fns";
+    import { suspiciousLastScanWindows } from "./slitherConfig";
 
 	export let modalOpen: boolean;
     export let scannedParticipant: Participant | null;
@@ -18,10 +20,6 @@
             scanDone = false;
         }
     }
-
-    // if scanning for checkin, show checkin status
-    // if scanning for meal, show last meal scan (highlighting if recent) AND dietary restrictions
-    // if scanning for workshop, show last workshop scan (highlighting if recent)
 
     async function checkIn() {
         if (scannedParticipant === null || postFetching || scanDone) {
@@ -71,6 +69,38 @@
         }
 
         postFetching = false;
+    }
+
+    async function scanWorkshop() {
+        if (scannedParticipant === null || postFetching || scanDone) {
+            return;
+        }
+
+        postFetching = true;
+        const urlParams = new URLSearchParams({ email: scannedParticipant.email });
+        const participantEmail = scannedParticipant.email;
+        try {
+            const response = await fetch("/api/participant/workshop?" + urlParams.toString(),
+                { method: "POST" }
+            );
+
+            if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
+                scanDone = true;
+            }
+        } catch (error) {
+            console.error(error);
+            scannedParticipant.failedToFetch = true;
+        }
+
+        postFetching = false;
+    }
+
+    function workshopScanIsSuspiciouslyRecent() {
+        if (scannedParticipant === null || scannedParticipant.lastWorkshopScan === null) {
+            return false;
+        }
+
+        return Date.now() - scannedParticipant.lastWorkshopScan.getTime() < suspiciousLastScanWindows.Workshop;
     }
 
 </script>
@@ -141,13 +171,30 @@
                             {#if postFetching}
                                 <LoaderIcon class="animate-spin mx-auto" size="32" />
                             {:else if scanDone}
-                                Scan Successful!
+                                Log Successful!
                             {:else}
-                                Scan Meal
+                                Log Meal
                             {/if}
                         </button>
                     {:else if selectedScanningForType === "Workshop"}
-                        <p>Last workshop scan: {scannedParticipant.lastWorkshopScan}</p>
+                        <p>Last workshop scan:
+                            {#if scannedParticipant.lastWorkshopScan === null}
+                                never
+                            {:else if workshopScanIsSuspiciouslyRecent()}
+                                <span class="font-bold text-red-700">{formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })} ⚠</span>
+                            {:else}
+                                {formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })}
+                            {/if}
+                        </p>
+                        <button on:click={scanWorkshop} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
+                            {#if postFetching}
+                                <LoaderIcon class="animate-spin mx-auto" size="32" />
+                            {:else if scanDone}
+                                Log Successful!
+                            {:else}
+                                Log Workshop
+                            {/if}
+                        </button>
                     {/if}
                 {:else}
                     <p class="animate-pulse">Fetching participant info...</p>

@@ -73,7 +73,7 @@ export type Participant = {
     failedToFetch: boolean;
     checkinStatus: CheckinStatus;
     wares: Wares;
-    lastWorkshopScan: Date;
+    lastWorkshopScan: Date | null;
     mealScans: MealCode[];
     dietaryRestrictions: string;
 };
@@ -89,7 +89,7 @@ export function getUnfetchedParticipant(qrCode: ObosQRCode): Participant {
         failedToFetch: false,
         checkinStatus: "Under Review",
         wares: "Software",
-        lastWorkshopScan: new Date(0),
+        lastWorkshopScan: null,
         mealScans: [],
         dietaryRestrictions: "[]",
     };
