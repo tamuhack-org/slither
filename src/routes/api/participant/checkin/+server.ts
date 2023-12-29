@@ -2,7 +2,7 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { Client } from "pg";
-import { getCheckinStatus, type CheckinStatus } from "$lib/slitherTypes";
+import { getCheckinStatus, type CheckinStatus, getWares } from "$lib/slitherTypes";
 import { DATABASE_URL } from "$env/static/private";
 
 // GET route to get a participant's checkin status
@@ -10,6 +10,7 @@ import { DATABASE_URL } from "$env/static/private";
 //     email: string
 // returns:
 //     status: CheckinStatus
+//     wares: Wares
 export const GET: RequestHandler = async ({ url }) => {
     const email = url.searchParams.get("email");
 
@@ -26,7 +27,7 @@ export const GET: RequestHandler = async ({ url }) => {
     client.connect();
 
     const query = `
-        SELECT apps.status
+        SELECT apps.status, apps.wares
         FROM user_user u
         JOIN application_application apps ON u.id = apps.user_id
         WHERE u.email = $1
@@ -34,17 +35,20 @@ export const GET: RequestHandler = async ({ url }) => {
     const values = [email];
 
     let checkinStatus = null;
+    let wares = null;
     try {
         const result = await client.query(query, values);
-        const statusChar = result.rows[0].status;
+        const { status: statusChar, wares: waresCode } = result.rows[0];
         checkinStatus = getCheckinStatus(statusChar);
+        wares = getWares(waresCode);
     } catch (err) {
         console.error("Error querying database", err);
         error(500, "Error querying database");
+    } finally {
+        client.end();
     }
-    client.end();
 
-	return json({ checkinStatus });
+	return json({ checkinStatus, wares });
 };
 
 // POST route to set a participant's checkin status to "Checked In"

@@ -1,6 +1,5 @@
 
 <script lang="ts">
-    import { scanningForOptions } from "./slitherConfig";
     import { getMealCode, type Participant, type ScanningForType } from "./slitherTypes";
     import { LoaderIcon, XIcon } from "svelte-feather-icons";
 
@@ -12,8 +11,9 @@
     let postFetching = false;
     let scanDone = false;
     let lastScannedParticipantEmail: string | null = null;
+    let lastSelectedScanningForOption: string | null = null;
     $: {
-        if (scannedParticipant !== null && scannedParticipant.email !== lastScannedParticipantEmail) {
+        if (scannedParticipant !== null && (scannedParticipant.email !== lastScannedParticipantEmail || selectedScanningForOption !== lastSelectedScanningForOption)) {
             lastScannedParticipantEmail = scannedParticipant.email;
             scanDone = false;
         }
@@ -88,7 +88,10 @@
             {:else}
                 <p class="text-2xl font-semibold">{scannedParticipant.firstName}</p>
                 <p class="text-2xl font-semibold">{scannedParticipant.lastName}</p>
-                <p class="mb">{scannedParticipant.email}</p>
+                <p>{scannedParticipant.email}</p>
+                {#if scannedParticipant.infoFetched}
+                    <p>{scannedParticipant.wares} Hacker</p>
+                {/if}
                 <hr class="my-4 border-2 rounded-xl" />
                 
                 {#if scannedParticipant.failedToFetch}

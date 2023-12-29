@@ -61,9 +61,9 @@ export const GET: RequestHandler = async ({ url }) => {
     } catch (err) {
         console.error("Error querying database", err);
         error(500, "Error querying database");
+    } finally {
+        client.end();
     }
-
-    client.end();
 
     return json({ mealScans, dietaryRestrictions });
 };

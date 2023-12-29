@@ -50,6 +50,19 @@ export function getMealCode(mealStr: string): MealCode {
     }
 }
 
+export type Wares = "Software" | "Hardware";
+
+export function getWares(waresCode: string): Wares {
+    switch (waresCode) {
+        case "SW":
+            return "Software";
+        case "HW":
+            return "Hardware";
+        default:
+            throw new Error("Invalid wares code");
+    }
+}
+
 export type Participant = {
     firstName: string;
     lastName: string;
@@ -59,6 +72,7 @@ export type Participant = {
     infoFetched: boolean;
     failedToFetch: boolean;
     checkinStatus: CheckinStatus;
+    wares: Wares;
     lastWorkshopScan: Date;
     mealScans: MealCode[];
     dietaryRestrictions: string;
@@ -74,6 +88,7 @@ export function getUnfetchedParticipant(qrCode: ObosQRCode): Participant {
         infoFetched: false,
         failedToFetch: false,
         checkinStatus: "Under Review",
+        wares: "Software",
         lastWorkshopScan: new Date(0),
         mealScans: [],
         dietaryRestrictions: "[]",

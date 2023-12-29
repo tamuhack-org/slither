@@ -25,6 +25,7 @@
 
         if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
             scannedParticipant.checkinStatus = responseData.checkinStatus;
+            scannedParticipant.wares = responseData.wares;
         }
     }
 
