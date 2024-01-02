@@ -5,6 +5,7 @@
     import { scanningForOptions } from "$lib/slitherConfig";
     import { LogOutIcon } from "svelte-feather-icons";
     import ScanModal from "$lib/scanModal.svelte";
+    import { getAuthHeader } from "$lib/slitherAuth";
     
     let temp_loggedIn = true;
     let selectedScanningForOption = Object.keys(scanningForOptions)[0];
@@ -20,7 +21,11 @@
         const urlParams = new URLSearchParams({ email: scannedParticipant.email });
         const participantEmail = scannedParticipant.email;
 
-        const response = await fetch("/api/participant/checkin?" + urlParams.toString());
+        const response = await fetch("/api/participant/checkin?" + urlParams.toString(), {
+            headers: {
+                "Authorization": getAuthHeader()
+            }
+        });
         const responseData = await response.json();
 
         if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
@@ -37,7 +42,11 @@
         const urlParams = new URLSearchParams({ email: scannedParticipant.email });
         const participantEmail = scannedParticipant.email;
 
-        const response = await fetch("/api/participant/meal?" + urlParams.toString());
+        const response = await fetch("/api/participant/meal?" + urlParams.toString(), {
+            headers: {
+                "Authorization": getAuthHeader()
+            }
+        });
         const responseData = await response.json();
 
         if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
@@ -54,7 +63,11 @@
         const urlParams = new URLSearchParams({ email: scannedParticipant.email });
         const participantEmail = scannedParticipant.email;
 
-        const response = await fetch("/api/participant/workshop?" + urlParams.toString());
+        const response = await fetch("/api/participant/workshop?" + urlParams.toString(), {
+            headers: {
+                "Authorization": getAuthHeader()
+            }
+        });
         const responseData = await response.json();
 
         if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code

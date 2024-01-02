@@ -3,6 +3,7 @@ import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { Client } from "pg";
 import { DATABASE_URL } from "$env/static/private";
+import { getAuthStatus } from "$lib/slitherAuth";
 
 // GET route to get all of a participant's meal scans, and their dietary restrictions
 // params:
@@ -10,7 +11,15 @@ import { DATABASE_URL } from "$env/static/private";
 // returns:
 //     status: MealCode[]
 //     dietaryRestrictions: string (containing valid JSON)
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, request }) => {
+    const authStatus = await getAuthStatus(request);
+    if (!authStatus.loggedIn) {
+        return json({ "error": "Not logged in" }, { status: 401 });
+    }
+    else if (!authStatus.authorized) {
+        return json({ "error": "Not authorized" }, { status: 403 });
+    }
+    
     const email = url.searchParams.get("email");
 
     if (!email) {
@@ -74,7 +83,15 @@ export const GET: RequestHandler = async ({ url }) => {
 //     mealCode: MealCode
 // returns:
 //     nothing
-export const POST: RequestHandler = async ({ url }) => {
+export const POST: RequestHandler = async ({ url, request }) => {
+    const authStatus = await getAuthStatus(request);
+    if (!authStatus.loggedIn) {
+        return json({ "error": "Not logged in" }, { status: 401 });
+    }
+    else if (!authStatus.authorized) {
+        return json({ "error": "Not authorized" }, { status: 403 });
+    }
+
     const email = url.searchParams.get("email");
     const mealCode = url.searchParams.get("mealCode");
 

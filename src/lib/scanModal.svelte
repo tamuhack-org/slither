@@ -4,6 +4,7 @@
     import { LoaderIcon, XIcon } from "svelte-feather-icons";
     import { formatDistanceToNow } from "date-fns";
     import { suspiciousLastScanWindows } from "./slitherConfig";
+    import { getAuthHeader } from "./slitherAuth";
 
 	export let modalOpen: boolean;
     export let scannedParticipant: Participant | null;
@@ -30,9 +31,12 @@
         const urlParams = new URLSearchParams({ email: scannedParticipant.email });
         const participantEmail = scannedParticipant.email;
         try {
-            const response = await fetch("/api/participant/checkin?" + urlParams.toString(),
-                { method: "POST" }
-            );
+            const response = await fetch("/api/participant/checkin?" + urlParams.toString(), {
+                method: "POST",
+                headers: {
+                    "Authorization": getAuthHeader()
+                }
+            });
             const responseData = await response.json();
 
             if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
@@ -56,9 +60,12 @@
         const urlParams = new URLSearchParams({ email: scannedParticipant.email, mealCode: getMealCode(selectedScanningForOption) });
         const participantEmail = scannedParticipant.email;
         try {
-            const response = await fetch("/api/participant/meal?" + urlParams.toString(),
-                { method: "POST" }
-            );
+            const response = await fetch("/api/participant/meal?" + urlParams.toString(), {
+                method: "POST",
+                headers: {
+                    "Authorization": getAuthHeader()
+                }
+            });
 
             if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
                 scanDone = true;
@@ -80,9 +87,12 @@
         const urlParams = new URLSearchParams({ email: scannedParticipant.email });
         const participantEmail = scannedParticipant.email;
         try {
-            const response = await fetch("/api/participant/workshop?" + urlParams.toString(),
-                { method: "POST" }
-            );
+            const response = await fetch("/api/participant/workshop?" + urlParams.toString(), {
+                method: "POST",
+                headers: {
+                    "Authorization": getAuthHeader()
+                }
+            });
 
             if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
                 scanDone = true;

@@ -4,6 +4,7 @@ import type { RequestHandler } from "./$types";
 import { Client } from "pg";
 import { getCheckinStatus, type CheckinStatus, getWares } from "$lib/slitherTypes";
 import { DATABASE_URL } from "$env/static/private";
+import { getAuthStatus } from "$lib/slitherAuth";
 
 // GET route to get a participant's checkin status
 // params:
@@ -11,7 +12,15 @@ import { DATABASE_URL } from "$env/static/private";
 // returns:
 //     status: CheckinStatus
 //     wares: Wares
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, request }) => {
+    const authStatus = await getAuthStatus(request);
+    if (!authStatus.loggedIn) {
+        return json({ "error": "Not logged in" }, { status: 401 });
+    }
+    else if (!authStatus.authorized) {
+        return json({ "error": "Not authorized" }, { status: 403 });
+    }
+
     const email = url.searchParams.get("email");
 
     if (!email) {
@@ -56,7 +65,15 @@ export const GET: RequestHandler = async ({ url }) => {
 //     email: string
 // returns:
 //     status: CheckinStatus
-export const POST: RequestHandler = async ({ url }) => {
+export const POST: RequestHandler = async ({ url, request }) => {
+    const authStatus = await getAuthStatus(request);
+    if (!authStatus.loggedIn) {
+        return json({ "error": "Not logged in" }, { status: 401 });
+    }
+    else if (!authStatus.authorized) {
+        return json({ "error": "Not authorized" }, { status: 403 });
+    }
+
     const email = url.searchParams.get("email");
 
     if (!email) {
