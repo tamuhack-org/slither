@@ -6,12 +6,40 @@
     import { LogOutIcon } from "svelte-feather-icons";
     import ScanModal from "$lib/scanModal.svelte";
     import { getAuthHeader } from "$lib/slitherAuth";
+    import { browser } from "$app/environment";
     
-    let temp_loggedIn = true;
+    let authorized = false;
+    let fetchingLoggedIn = true;
     let selectedScanningForOption = Object.keys(scanningForOptions)[0];
     $: selectedScanningForType = scanningForOptions[selectedScanningForOption];
     let modalOpen = false;
     let scannedParticipant: Participant | null = null;
+
+    async function fetchLoggedIn() {
+        const response = await fetch("/api/auth/verify", {
+            "method": "POST",
+            "headers": {
+                "Authorization": getAuthHeader()
+            }
+        });
+        if (response.status === 403)
+        {
+            authorized = false;
+        }
+        else if (response.status === 200)
+        {
+            authorized = true;
+        }
+        else
+        {
+            window.location.href = "/login";
+        }
+        fetchingLoggedIn = false;
+    }
+
+    if (browser) {
+        fetchLoggedIn();
+    }
 
     async function fetchCheckin() {
         if (scannedParticipant === null) {
@@ -119,33 +147,39 @@
 </script>
 
 <div>
-    {#if !temp_loggedIn}
-        <h1 class="text-8xl text-center font-bold">Slither</h1>
-        <h2 class="text-3xl text-center font-semibold mb-28">QR Code Scanner</h2>
+    <div class="grid grid-cols-3">
+        <span></span>
+        <h1 class="text-4xl text-center font-bold">Slither</h1>
+        <button class="ml-auto mr-1">
+            <a href="/logout" class="w-fit"><LogOutIcon size="36" /></a>
+        </button>
+    </div>
+    <hr class="border border-zinc-300 mb-5" />
+
+    {#if !authorized}
+        {#if fetchingLoggedIn}
+            <p class="text-2xl text-center">Loading...</p>
+        {:else}
+            <p class="text-lg text-center">You are not authorized to scan yet :(</p>
+            <p class="text-lg text-center mt-2">Ask a dev team member to give you Staff status</p>
+            <p class="text-lg text-center mt-6">Your email: {localStorage.getItem("email")}</p>
+        {/if}
     {:else}
-        <div class="grid grid-cols-3">
-            <span></span>
-            <h1 class="text-4xl text-center font-bold">Slither</h1>
-            <button class="ml-auto mr-1">
-                <a href="/logout" class="w-fit"><LogOutIcon size="36" /></a>
-            </button>
+        <div class="mb-10">
+            <h3 class="text-2xl text-center mb-2"><label for="scanningfor-select">Scanning for...</label></h3>
+            <select bind:value={selectedScanningForOption} class="text-2xl px-1 mx-auto rounded-md border-2 border-zinc-700 block" id="scanningfor-select">
+                {#each Object.keys(scanningForOptions) as option}
+                    <option value={option}>{option}</option>
+                {/each}
+            </select>
         </div>
-        <hr class="border border-zinc-300 mb-5" />
+        
+        <Scanner {onScanGood} {onScanBad} />
+    
+        <button on:click={() => {modalOpen = true; fetchScannedParticipantInfo();}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">Re-open Last Scan</button>
+        <button on:click={() => {alert("todo :)")}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">History</button>
     {/if}
 
-    <div class="mb-10">
-        <h3 class="text-2xl text-center mb-2"><label for="scanningfor-select">Scanning for...</label></h3>
-        <select bind:value={selectedScanningForOption} class="text-2xl px-1 mx-auto rounded-md border-2 border-zinc-700 block" id="scanningfor-select">
-            {#each Object.keys(scanningForOptions) as option}
-                <option value={option}>{option}</option>
-            {/each}
-        </select>
-    </div>
-    
-    <Scanner {onScanGood} {onScanBad} />
-
-    <button on:click={() => {modalOpen = true; fetchScannedParticipantInfo();}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">Re-open Last Scan</button>
-    <button on:click={() => {alert("todo :)")}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">History</button>
 </div>
 
 <ScanModal bind:modalOpen {scannedParticipant} {selectedScanningForOption} {selectedScanningForType} />

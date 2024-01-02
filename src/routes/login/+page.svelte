@@ -49,12 +49,19 @@
         if (response.status === 200) {
             const data = await response.json();
             localStorage.setItem("token", data.token);
+            localStorage.setItem("email", email);
             window.location.href = "/";
         } else {
             wrongCredentials = true;
         }
 
         fetching = false;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === "Enter") {
+            login();
+        }
     }
 
 </script>
@@ -67,7 +74,7 @@
     <input bind:value={email} type="email" id="email" name="email" class="px-1 mt-1 mb-5 border-2 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
 
     <label for="password" class="text-lg text-gray-700">Password</label>
-    <input bind:value={password} type="password" id="password" name="password" class="px-1 mt-1 border-2 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+    <input bind:value={password} type="password" id="password" name="password" class="px-1 mt-1 border-2 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" on:keydown={handleKeyDown} />
 
     <button on:click={login} type="submit" class="mt-5 border-2 border-black px-2 rounded-lg {fetching ? "cursor-wait" : ""}">Login</button>
     {#if wrongCredentials}

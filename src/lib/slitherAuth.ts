@@ -28,7 +28,7 @@ export async function getAuthStatus(request: Request): Promise<AuthStatus> {
     });
     
     return {
-        "loggedIn": response.status === 200 || response.status === 401,
+        "loggedIn": response.status === 200 || response.status === 403,
         "authorized": response.status === 200,
         "response": response,
     }
