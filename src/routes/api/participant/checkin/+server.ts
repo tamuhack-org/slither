@@ -3,7 +3,7 @@ import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { Client } from "pg";
 import { getCheckinStatus, type CheckinStatus, getWares } from "$lib/slitherTypes";
-import { DATABASE_URL } from "$env/static/private";
+import { OBOS_DATABASE_URL } from "$env/static/private";
 import { getAuthStatus } from "$lib/slitherAuth";
 
 // GET route to get a participant's checkin status
@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
     }
 
     const client = new Client({
-        connectionString: DATABASE_URL,
+        connectionString: OBOS_DATABASE_URL,
         ssl: {
             rejectUnauthorized: false,
         },
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async ({ url, request }) => {
     }
 
     const client = new Client({
-        connectionString: DATABASE_URL,
+        connectionString: OBOS_DATABASE_URL,
         ssl: {
             rejectUnauthorized: false,
         },
