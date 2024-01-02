@@ -1,7 +1,8 @@
 
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { Client } from "pg";
+import pg from "pg";
+const { Client } = pg;
 import { getCheckinStatus, type CheckinStatus, getWares } from "$lib/slitherTypes";
 import { OBOS_DATABASE_URL } from "$env/static/private";
 import { getAuthStatus } from "$lib/slitherAuth";
