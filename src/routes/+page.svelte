@@ -114,7 +114,7 @@
             <span></span>
             <h1 class="text-4xl text-center font-bold">Slither</h1>
             <button class="ml-auto mr-1">
-                <LogOutIcon size="36" />
+                <a href="/logout" class="w-fit"><LogOutIcon size="36" /></a>
             </button>
         </div>
         <hr class="border border-zinc-300 mb-5" />

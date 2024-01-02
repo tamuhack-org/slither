@@ -14,3 +14,5 @@ export const scanningForOptions: {[name: string]: ScanningForType} = {
 export const suspiciousLastScanWindows = {
     "Workshop": 1000 * 60 * 15,  // 15 minutes
 };
+
+export const ouroborosURL = "https://register.tamuhack.com"
