@@ -2,18 +2,21 @@
 <script lang="ts">
     import Scanner from "$lib/scanner.svelte";
     import { getUnfetchedParticipant, type ObosQRCode, type Participant } from "$lib/slitherTypes";
-    import { scanningForOptions } from "$lib/slitherConfig";
+    import { historySize, scanningForOptions } from "$lib/slitherConfig";
     import { LogOutIcon } from "svelte-feather-icons";
     import ScanModal from "$lib/scanModal.svelte";
     import { getAuthHeader } from "$lib/slitherAuth";
     import { browser } from "$app/environment";
+    import HistoryModal from "$lib/historyModal.svelte";
     
     let authorized = false;
     let fetchingLoggedIn = true;
     let selectedScanningForOption = Object.keys(scanningForOptions)[0];
     $: selectedScanningForType = scanningForOptions[selectedScanningForOption];
-    let modalOpen = false;
+    let scanModalOpen = false;
+    let historyModalOpen = false;
     let scannedParticipant: Participant | null = null;
+    let scannedParticipantHistory: Participant[] = [];
 
     async function fetchLoggedIn() {
         const response = await fetch("/api/auth/verify", {
@@ -126,28 +129,39 @@
     }
 
     function onScanGood(obosQRCode: ObosQRCode) {
-        if (modalOpen) {
+        if (scanModalOpen) {
             return;
         }
 
         scannedParticipant = getUnfetchedParticipant(obosQRCode);
-        modalOpen = true;
+        scannedParticipantHistory.push(scannedParticipant);
+        if (scannedParticipantHistory.length > historySize) {
+            scannedParticipantHistory.shift();
+        }
+        scanModalOpen = true;
         fetchScannedParticipantInfo();
     }
 
     function onScanBad() {
-        if (modalOpen) {
+        if (scanModalOpen) {
             return;
         }
 
         scannedParticipant = null;
-        modalOpen = true;
+        scanModalOpen = true;
+    }
+
+    function onHistoricalScan(participant: Participant) {
+        scannedParticipant = participant;
+        historyModalOpen = false;
+        scanModalOpen = true;
+        fetchScannedParticipantInfo();
     }
     
 </script>
 
 <div>
-    <div class="grid grid-cols-3 bg-pink-500 mb-5 py-1">
+    <div class="grid grid-cols-3 bg-thpink mb-5 py-1">
         <span />
         <h1 class="text-4xl text-center font-bold text-white">Slither</h1>
         <button class="ml-auto mr-1">
@@ -176,11 +190,12 @@
         <Scanner {onScanGood} {onScanBad} />
     
         <div class="flex flex-row justify-center gap-2">
-            <button on:click={() => {modalOpen = true; fetchScannedParticipantInfo();}} class="block border-[3px] border-pink-500 px-2 py-1 text-xl rounded-lg mt-5">Re-open Last Scan</button>
-            <button on:click={() => {alert("todo :)")}} class="block border-[3px] border-pink-500 px-2 py-1 text-xl rounded-lg mt-5">History</button>        
+            <button on:click={() => {scanModalOpen = true; fetchScannedParticipantInfo();}} class="block border-[3px] border-thpink hover:border-pink-400 px-2 py-1 text-xl rounded-lg mt-5">Re-open Last Scan</button>
+            <button on:click={() => {historyModalOpen = true;}} class="block border-[3px] border-thpink hover:border-pink-400 px-2 py-1 text-xl rounded-lg mt-5">History</button>        
         </div>
     {/if}
 
 </div>
 
-<ScanModal bind:modalOpen {scannedParticipant} {selectedScanningForOption} {selectedScanningForType} />
+<ScanModal bind:modalOpen={scanModalOpen} {scannedParticipant} {selectedScanningForOption} {selectedScanningForType} />
+<HistoryModal bind:modalOpen={historyModalOpen} {scannedParticipantHistory} {onHistoricalScan} />
