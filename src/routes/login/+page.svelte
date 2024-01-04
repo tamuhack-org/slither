@@ -66,17 +66,17 @@
 
 </script>
 
-<h1 class="text-8xl text-center font-bold">Slither</h1>
-<h2 class="text-3xl text-center font-semibold mb-28">QR Code Scanner</h2>
+<h1 class="text-8xl text-center font-bold text-pink-500">Slither</h1>
+<h2 class="text-3xl text-center font-semibold mb-16 text-pink-500">QR Code Scanner</h2>
 
-<div class="mx-auto max-w-3xl">
-    <label for="email" class="text-lg text-gray-700">Email</label>
-    <input bind:value={email} type="email" id="email" name="email" class="px-1 mt-1 mb-5 border-2 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+<div class="mx-auto max-w-md px-4">
+    <label for="email" class="text-lg font-semibold text-gray-700">Email</label>
+    <input bind:value={email} type="email" id="email" name="email" class="px-1 mt-1 mb-5 border-2 block w-full shadow-sm text-lg border-gray-300 rounded-md" />
 
-    <label for="password" class="text-lg text-gray-700">Password</label>
-    <input bind:value={password} type="password" id="password" name="password" class="px-1 mt-1 border-2 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" on:keydown={handleKeyDown} />
+    <label for="password" class="text-lg font-semibold text-gray-700">Password</label>
+    <input bind:value={password} type="password" id="password" name="password" class="px-1 mt-1 border-2 block w-full shadow-sm text-lg border-gray-300 rounded-md" on:keydown={handleKeyDown} />
 
-    <button on:click={login} type="submit" class="mt-5 border-2 border-black px-2 rounded-lg {fetching ? "cursor-wait" : ""}">Login</button>
+    <button on:click={login} type="submit" class="mt-8 mx-auto block text-xl bg-pink-500 hover:bg-pink-600 text-white font-bold w-full py-1 rounded-lg {fetching ? "cursor-wait" : ""}">Login</button>
     {#if wrongCredentials}
         <p class="text-red-500 mt-1">Incorrect email or password</p>
     {/if}

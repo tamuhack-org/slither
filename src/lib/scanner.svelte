@@ -54,7 +54,7 @@
 <div>
 
     {#if !scannerOpen}
-        <button class="text-4xl border-4 border-black rounded-xl p-2 mx-auto block" on:click={() => {scannerOpen = true; makeScanner();}}>Start Scanning</button>
+        <button class="text-4xl bg-pink-500 hover:bg-pink-600 text-white rounded-lg py-2 px-[21px] mx-auto block" on:click={() => {scannerOpen = true; makeScanner();}}>Start Scanning</button>
     {/if}
     
     <div id={SCANNER_HTML_ID} class="w-full max-w-2xl mx-auto"></div>

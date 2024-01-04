@@ -147,14 +147,13 @@
 </script>
 
 <div>
-    <div class="grid grid-cols-3">
-        <span></span>
-        <h1 class="text-4xl text-center font-bold">Slither</h1>
+    <div class="grid grid-cols-3 bg-pink-500 mb-5 py-1">
+        <span />
+        <h1 class="text-4xl text-center font-bold text-white">Slither</h1>
         <button class="ml-auto mr-1">
-            <a href="/logout" class="w-fit"><LogOutIcon size="36" /></a>
+            <a href="/logout" class="w-fit text-white"><LogOutIcon size="36" strokeWidth={2.5} /></a>
         </button>
     </div>
-    <hr class="border border-zinc-300 mb-5" />
 
     {#if !authorized}
         {#if fetchingLoggedIn}
@@ -167,7 +166,7 @@
     {:else}
         <div class="mb-10">
             <h3 class="text-2xl text-center mb-2"><label for="scanningfor-select">Scanning for...</label></h3>
-            <select bind:value={selectedScanningForOption} class="text-2xl px-1 mx-auto rounded-md border-2 border-zinc-700 block" id="scanningfor-select">
+            <select bind:value={selectedScanningForOption} class="text-2xl px-1 mx-auto rounded-md border-2 border-zinc-700 hover:bg-zinc-300 bg-zinc-200 block" id="scanningfor-select">
                 {#each Object.keys(scanningForOptions) as option}
                     <option value={option}>{option}</option>
                 {/each}
@@ -176,8 +175,10 @@
         
         <Scanner {onScanGood} {onScanBad} />
     
-        <button on:click={() => {modalOpen = true; fetchScannedParticipantInfo();}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">Re-open Last Scan</button>
-        <button on:click={() => {alert("todo :)")}} class="block mx-auto border-2 border-black p-1 text-xl rounded-md mt-5">History</button>
+        <div class="flex flex-row justify-center gap-2">
+            <button on:click={() => {modalOpen = true; fetchScannedParticipantInfo();}} class="block border-[3px] border-pink-500 px-2 py-1 text-xl rounded-lg mt-5">Re-open Last Scan</button>
+            <button on:click={() => {alert("todo :)")}} class="block border-[3px] border-pink-500 px-2 py-1 text-xl rounded-lg mt-5">History</button>        
+        </div>
     {/if}
 
 </div>
