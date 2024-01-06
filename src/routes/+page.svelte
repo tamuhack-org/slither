@@ -129,7 +129,7 @@
     }
 
     function onScanGood(obosQRCode: ObosQRCode) {
-        if (scanModalOpen) {
+        if (scanModalOpen || historyModalOpen) {
             return;
         }
 
@@ -138,12 +138,13 @@
         if (scannedParticipantHistory.length > historySize) {
             scannedParticipantHistory.shift();
         }
+        scannedParticipantHistory = scannedParticipantHistory;
         scanModalOpen = true;
         fetchScannedParticipantInfo();
     }
 
     function onScanBad() {
-        if (scanModalOpen) {
+        if (scanModalOpen || historyModalOpen) {
             return;
         }
 
