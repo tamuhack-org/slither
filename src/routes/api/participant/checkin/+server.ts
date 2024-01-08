@@ -13,6 +13,8 @@ import { getAuthStatus } from "$lib/slitherAuth";
 // returns:
 //     status: CheckinStatus
 //     wares: Wares
+//     firstName: string
+//     lastName: string
 export const GET: RequestHandler = async ({ url, request }) => {
     const authStatus = await getAuthStatus(request);
     if (!authStatus.loggedIn) {
@@ -37,7 +39,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
     client.connect();
 
     const query = `
-        SELECT apps.status, apps.wares
+        SELECT apps.status, apps.wares, apps.first_name, apps.last_name
         FROM user_user u
         JOIN application_application apps ON u.id = apps.user_id
         WHERE u.email = $1
@@ -46,11 +48,15 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
     let checkinStatus = null;
     let wares = null;
+    let firstName = null;
+    let lastName = null;
     try {
         const result = await client.query(query, values);
         const { status: statusChar, wares: waresCode } = result.rows[0];
         checkinStatus = getCheckinStatus(statusChar);
         wares = getWares(waresCode);
+        firstName = result.rows[0].first_name;
+        lastName = result.rows[0].last_name;
         client.end();
     } catch (err) {
         console.error("Error querying database", err);
@@ -58,7 +64,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
         error(500, "Error querying database");
     }
 
-	return json({ checkinStatus, wares });
+	return json({ checkinStatus, wares, firstName, lastName });
 };
 
 // POST route to set a participant's checkin status to "Checked In"

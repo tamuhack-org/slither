@@ -1,11 +1,4 @@
 
-export type ObosQRCode = {
-    first_name: string;
-    last_name: string;
-    email: string;
-    university: string;
-};
-
 export type CheckinStatus = "Under Review" | "Rejected/Waitlisted" | "Admitted" | "Confirmed" | "Declined" | "Checked In" | "Expired";
 
 export function getCheckinStatus(statusChar: string): CheckinStatus {
@@ -67,7 +60,6 @@ export type Participant = {
     firstName: string;
     lastName: string;
     email: string;
-    university: string;
 
     infoFetched: boolean;
     failedToFetch: boolean;
@@ -78,12 +70,11 @@ export type Participant = {
     dietaryRestrictions: string;
 };
 
-export function getUnfetchedParticipant(qrCode: ObosQRCode): Participant {
+export function getUnfetchedParticipant(email: string): Participant {
     return {
-        firstName: qrCode.first_name,
-        lastName: qrCode.last_name,
-        email: qrCode.email,
-        university: qrCode.university,
+        firstName: "",
+        lastName: "",
+        email: email,
 
         infoFetched: false,
         failedToFetch: false,

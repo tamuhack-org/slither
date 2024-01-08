@@ -10,7 +10,7 @@
 </script>
 
 <div class="z-10 animate-fadeIn fixed left-0 top-0 w-full h-full overflow-auto bg-[#00000088] {modalOpen ? "block" : "hidden"}">
-    <div class="animate-popIn bg-white rounded-xl fixed left-auto right-auto top-auto bottom-0 m-4 p-4 w-11/12 shadow-md">
+    <div class="animate-popIn bg-white rounded-xl fixed left-auto right-auto top-auto bottom-0 m-4 p-4 w-11/12 shadow-md max-w-2xl">
         <button class="ml-auto block" on:click={() => modalOpen = false}><XIcon size="36" /></button>
 
         <div>

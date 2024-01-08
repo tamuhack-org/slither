@@ -2,34 +2,28 @@
 <script lang="ts">
     import { Html5QrcodeScanner, Html5QrcodeScanType, type Html5QrcodeResult } from "html5-qrcode";
     import type { Html5QrcodeScannerConfig } from "html5-qrcode/esm/html5-qrcode-scanner";
-    import type { ObosQRCode } from "./slitherTypes";
 
     const SCANNER_HTML_ID = "slither-scanner-reader";
 
-    export let onScanGood: (obosQRCode: ObosQRCode) => void;
-    export let onScanBad: () => void;
+    export let onScan: (email: string) => void;
 
     let scannerOpen = false;
 
-    function getObosQRCode(decodedText: string): ObosQRCode | null {
-        try {
-            const decoded = JSON.parse(decodedText);
-            if (decoded.first_name && decoded.last_name && decoded.email && decoded.university) {
-                return decoded;
-            }
-        } catch (e) {
-            return null;
-        }
-        return null;
-    }
-
     function onScanSuccess(decodedText: string, decodedResult: Html5QrcodeResult) {
-        const obosQRCode = getObosQRCode(decodedText);
-        if (obosQRCode) {
-            onScanGood(obosQRCode);
-        } else {
-            onScanBad();
+        let email = "";
+        try {
+            // Original Ouroboros QR code
+            const decoded = JSON.parse(decodedText);
+            if (decoded.email && typeof decoded.email === "string") {
+                email = decoded.email;
+            }
         }
+        catch (e) {
+            // Simplified Apple Wallet QR code
+            email = decodedText;
+        }
+
+        onScan(email);
     }
 
     function onScanError(errorMessage: string) {

@@ -1,7 +1,7 @@
 
 <script lang="ts">
     import Scanner from "$lib/scanner.svelte";
-    import { getUnfetchedParticipant, type ObosQRCode, type Participant } from "$lib/slitherTypes";
+    import { getUnfetchedParticipant, type Participant } from "$lib/slitherTypes";
     import { historySize, scanningForOptions } from "$lib/slitherConfig";
     import { LogOutIcon } from "svelte-feather-icons";
     import ScanModal from "$lib/scanModal.svelte";
@@ -62,6 +62,8 @@
         if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
             scannedParticipant.checkinStatus = responseData.checkinStatus;
             scannedParticipant.wares = responseData.wares;
+            scannedParticipant.firstName = responseData.firstName;
+            scannedParticipant.lastName = responseData.lastName;
         }
     }
 
@@ -128,12 +130,12 @@
         }
     }
 
-    function onScanGood(obosQRCode: ObosQRCode) {
+    function onScan(email: string) {
         if (scanModalOpen || historyModalOpen) {
             return;
         }
 
-        scannedParticipant = getUnfetchedParticipant(obosQRCode);
+        scannedParticipant = getUnfetchedParticipant(email);
         scannedParticipantHistory.push(scannedParticipant);
         if (scannedParticipantHistory.length > historySize) {
             scannedParticipantHistory.shift();
@@ -141,15 +143,6 @@
         scannedParticipantHistory = scannedParticipantHistory;
         scanModalOpen = true;
         fetchScannedParticipantInfo();
-    }
-
-    function onScanBad() {
-        if (scanModalOpen || historyModalOpen) {
-            return;
-        }
-
-        scannedParticipant = null;
-        scanModalOpen = true;
     }
 
     function onHistoricalScan(participant: Participant) {
@@ -188,9 +181,9 @@
             </select>
         </div>
         
-        <Scanner {onScanGood} {onScanBad} />
+        <Scanner {onScan} />
     
-        <div class="flex flex-row justify-center gap-2">
+        <div class="flex flex-row justify-center gap-2 mb-4">
             <button on:click={() => {scanModalOpen = true; fetchScannedParticipantInfo();}} class="block border-[3px] border-thpink hover:border-pink-400 px-2 py-1 text-xl rounded-lg mt-5">Re-open Last Scan</button>
             <button on:click={() => {historyModalOpen = true;}} class="block border-[3px] border-thpink hover:border-pink-400 px-2 py-1 text-xl rounded-lg mt-5">History</button>        
         </div>
