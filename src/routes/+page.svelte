@@ -64,6 +64,12 @@
             scannedParticipant.wares = responseData.wares;
             scannedParticipant.firstName = responseData.firstName;
             scannedParticipant.lastName = responseData.lastName;
+            
+            scannedParticipantHistory.push(scannedParticipant);
+            if (scannedParticipantHistory.length > historySize) {
+                scannedParticipantHistory.shift();
+            }
+            scannedParticipantHistory = scannedParticipantHistory;
         }
     }
 
@@ -114,6 +120,7 @@
         }
 
         scannedParticipant.infoFetched = false;
+        const participantEmail = scannedParticipant.email;
         
         try {
             if (selectedScanningForType === "Check-in") {
@@ -123,10 +130,15 @@
             } else if (selectedScanningForType === "Workshop") {
                 await Promise.all([fetchCheckin(), fetchWorkshop()]);
             }
-            scannedParticipant.infoFetched = true;
+
+            if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
+                scannedParticipant.infoFetched = true;
+            }
         } catch (error) {
             console.error(error);
-            scannedParticipant.failedToFetch = true;
+            if (participantEmail === scannedParticipant.email) {  // in case the fetch took so long that the user scanned another QR code
+                scannedParticipant.failedToFetch = true;
+            }
         }
     }
 
@@ -136,11 +148,6 @@
         }
 
         scannedParticipant = getUnfetchedParticipant(email);
-        scannedParticipantHistory.push(scannedParticipant);
-        if (scannedParticipantHistory.length > historySize) {
-            scannedParticipantHistory.shift();
-        }
-        scannedParticipantHistory = scannedParticipantHistory;
         scanModalOpen = true;
         fetchScannedParticipantInfo();
     }
