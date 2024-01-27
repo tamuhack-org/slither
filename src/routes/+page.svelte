@@ -229,7 +229,7 @@
         class="block border-[3px] border-thpink hover:border-pink-400 px-2 py-1 text-xl rounded-lg mt-5"
         >History</button
       >
-    </div>
+      </div>
   {/if}
 </div>
 

@@ -87,3 +87,11 @@ export function getUnfetchedParticipant(email: string): Participant {
 }
 
 export type ScanningForType = "Check-in" | "Workshop" | "Meal";
+
+export type WorkshopScan = {
+    first_name: string;
+    last_name: string;
+    email: string;
+    timestamp: Date;
+    selected: boolean;
+};
