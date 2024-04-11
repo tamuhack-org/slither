@@ -7,6 +7,7 @@
     import { getAuthHeader } from "$lib/slitherAuth";
     import { browser } from "$app/environment";
     import HistoryModal from "$lib/historyModal.svelte";
+    import confetti from 'canvas-confetti';
   
     let authorized = false;
     let fetchingLoggedIn = true;
@@ -83,17 +84,28 @@
 
     function pickWinner() {
         let potentialWinners: WorkshopScan[] = [];
-        for (let i = 0; i < scans.length; i++) {
-            if (scans[i].selected) {
-                potentialWinners.push(scans[i]);
-            }
+        for (let i = 0; i < scans.length; i++) 
+        {
+          if (scans[i].selected) 
+          {
+            potentialWinners.push(scans[i]);
+          }
         }
 
-        if (potentialWinners.length > 0) {
-            winner = potentialWinners[Math.floor(Math.random() * potentialWinners.length)];
+        if (potentialWinners.length > 0) 
+        {
+          winner = potentialWinners[Math.floor(Math.random() * potentialWinners.length)];
+          runConfetti();
         }
     }
-  
+    function runConfetti() {
+      confetti({
+        zIndex: 1000,
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+  }
   </script>
   
   <div>
@@ -122,57 +134,152 @@
         </p>
       {/if}
     {:else}
-      <h1 class="text-3xl">SliTHer rAfflE WinNer PicKEr!!!!!!!!!!</h1>
+      
 
-      <p>Slelect timframe!!</p>
-        <div class="flex flex-row gap-4">
-            <input type="datetime-local" bind:value={timeWindowStartString} />
-            <input type="datetime-local" bind:value={timeWindowEndString} />
+      <div class="container">
+        
+        <div class="input-container">
+          <h1 class="text-3xl">Slither Raffle Picker!</h1>
+          <label for="first-time">Start Time:</label>
+          <input type="datetime-local" id="first-time" bind:value={timeWindowStartString} />
+          <label for="second-time">End Time:</label>
+          <input type="datetime-local" id="second-time" bind:value={timeWindowEndString} />
+          <div class="button-container">
+            <button on:click={pickWinner}>Pick A Winner</button>
+          </div>
         </div>
-        <p class="my-4">Timeframe: {timeWindowStart?.toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            })} - {timeWindowEnd?.toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            })}</p>
-
-        <button on:click={pickWinner} class="border-8 text-7xl active:bg-pink-500">PICK WINNNNER</button>
-        <div class="border-8 border-blue-500">
-            <p>Winner: </p>
-            <p>{winner?.first_name}</p>
-            <p>{winner?.last_name}</p>
+        <div class="winner-container">
+          <div class="winner-label">Winner:</div>
+          {#if winner}
+            <p>{winner?.first_name} {winner?.last_name}</p>
             <p>{winner?.email}</p>
+          {/if}
         </div>
+      </div>
 
 
-        <div class="flex flex-col">
-            {#each scans as scan}
-            <div class="flex flex-row gap-4 {scan.selected ? "text-blue-600 font-bold" : ""}">
-                <p class="mr-2">{scan.first_name}</p>
-                <p class="mr-2">{scan.last_name}</p>
-                <p class="mr-2">{scan.email}</p>
-                <p class="mr-2">
-                    {scan.timestamp.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                    })}
-                </p>
-            </div>
-            {/each}
+        <div class="table-container">
+          <div class="table-header">
+            <div class="table-cell">First Name</div>
+            <div class="table-cell">Last Name</div>
+            <div class="table-cell">Email</div>
+            <div class="table-cell">Date Scanned</div>
+          </div>
+          {#each scans as scan}
+          <div class="table-row {scan.selected ? 'selected' : ''}">
+              <p class="table-cell">{scan.first_name}</p>
+              <p class="table-cell">{scan.last_name}</p>
+              <p class="table-cell">{scan.email}</p>
+              <p class="table-cell">
+                {scan.timestamp.toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                })}
+              </p>
+          </div>
+          {/each}
         </div>
+
+        <style>
+          .table-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 700px;
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: sans-serif;
+          }
+        
+          .table-header {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background-color: #ddd;
+            padding: 10px;
+            font-weight: bold;
+          }
+        
+          .table-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+          }
+        
+          .table-row:nth-child(even) {
+            background-color: #f8f8f8;
+          }
+        
+          .table-row.selected {
+            color: #3B82F6;
+            font-weight: bold;
+          }
+        
+          .table-cell {
+            margin-right: 10px; 
+          }
+
+          .container {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          padding: 20px;
+        }
+
+        .input-container {
+          display: flex;
+          flex-direction: column;
+          margin-right: 20px; /* Adjust as needed */
+        }
+
+        input[type="datetime-local"] {
+          margin-bottom: 10px;
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+
+        .button-container {
+          margin-bottom: 10px;
+        }
+
+        button {
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          background-color: black;
+          color: white;
+          cursor: pointer;
+          font-size: 16px; /* Adjust as needed */
+          transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+          background-color: #555;
+        }
+
+        .winner-container {
+          border: 2px solid black;
+          border-radius: 10px;
+          padding: 20px;
+          width: 250px; /* Adjust as needed */
+          height: 150px; /* Adjust as needed */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
+
+        .winner-label {
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+
+        </style>        
     {/if}
   </div>
   
