@@ -233,7 +233,7 @@
         .input-container {
           display: flex;
           flex-direction: column;
-          margin-right: 20px; /* Adjust as needed */
+          margin-right: 20px;
         }
 
         input[type="datetime-local"] {
@@ -254,7 +254,7 @@
           background-color: black;
           color: white;
           cursor: pointer;
-          font-size: 16px; /* Adjust as needed */
+          font-size: 16px; 
           transition: background-color 0.3s ease;
         }
 
@@ -266,8 +266,8 @@
           border: 2px solid black;
           border-radius: 10px;
           padding: 20px;
-          width: 250px; /* Adjust as needed */
-          height: 150px; /* Adjust as needed */
+          width: 250px;
+          height: 150px;
           display: flex;
           justify-content: center;
           align-items: center;
