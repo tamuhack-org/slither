@@ -2,13 +2,15 @@
     import Scanner from "$lib/scanner.svelte";
     import { getUnfetchedParticipant, type Participant, type WorkshopScan } from "$lib/slitherTypes";
     import { historySize, scanningForOptions } from "$lib/slitherConfig";
-    import { LogOutIcon } from "svelte-feather-icons";
+    import { HomeIcon, LogOutIcon } from "svelte-feather-icons";
     import ScanModal from "$lib/scanModal.svelte";
     import { getAuthHeader } from "$lib/slitherAuth";
     import { browser } from "$app/environment";
     import HistoryModal from "$lib/historyModal.svelte";
     import confetti from 'canvas-confetti';
   
+
+    let showModal = false;
     let authorized = false;
     let fetchingLoggedIn = true;
     let scans: WorkshopScan[] = [];
@@ -110,7 +112,12 @@
   
   <div>
     <div class="grid grid-cols-3 bg-thpink mb-5 py-1">
-      <span />
+      <button class="ml-1 mr-auto home-icon">
+        <a href="/" class="w-fit text-white"
+          ><HomeIcon size="28" strokeWidth={2.5} /></a
+        >
+      </button>
+      
       <h1 class="text-3xl text-center font-medium font-roboto text-white">
         Slither
       </h1>
@@ -134,31 +141,29 @@
         </p>
       {/if}
     {:else}
-      
-
-      <div class="container">
-        
-        <div class="input-container">
-          <h1 class="text-3xl">Slither Raffle Picker!</h1>
-          <label for="first-time">Start Time:</label>
-          <input type="datetime-local" id="first-time" bind:value={timeWindowStartString} />
-          <label for="second-time">End Time:</label>
-          <input type="datetime-local" id="second-time" bind:value={timeWindowEndString} />
-          <div class="button-container">
-            <button on:click={pickWinner}>Pick A Winner</button>
-          </div>
-        </div>
-        <div class="winner-container">
-          <div class="winner-label">Winner:</div>
-          {#if winner}
-            <p>{winner?.first_name} {winner?.last_name}</p>
-            <p>{winner?.email}</p>
-          {/if}
-        </div>
-      </div>
-
 
         <div class="table-container">
+          <div class="container">
+        
+            <div class="input-container">
+              <h1 class="text-3xl">Slither Raffle Picker!</h1>
+              <label for="first-time">Start Time:</label>
+              <input type="datetime-local" id="first-time" bind:value={timeWindowStartString} />
+              <label for="second-time">End Time:</label>
+              <input type="datetime-local" id="second-time" bind:value={timeWindowEndString} />
+              <div class="button-container">
+                <button class="winner-button" on:click={pickWinner}>Pick A Winner</button>
+              </div>
+            </div>
+            <div class="winner-container">
+              <div class="winner-label">Winner:</div>
+              {#if winner}
+                <p class="winner-text">{winner?.first_name} {winner?.last_name}</p>
+                <p class="winner-text">{winner?.email}</p>
+              {/if}
+            </div>
+          </div>
+
           <div class="table-header">
             <div class="table-cell">First Name</div>
             <div class="table-cell">Last Name</div>
@@ -230,6 +235,10 @@
           padding: 20px;
         }
 
+        .home-icon {
+          background-color: blue;
+        }
+
         .input-container {
           display: flex;
           flex-direction: column;
@@ -247,11 +256,22 @@
           margin-bottom: 10px;
         }
 
-        button {
+        .winner-button {
           padding: 10px 20px;
           border: none;
           border-radius: 5px;
           background-color: black;
+          color: white;
+          cursor: pointer;
+          font-size: 16px; 
+          transition: background-color 0.3s ease;
+        }
+
+        button {
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          background-color: red;
           color: white;
           cursor: pointer;
           font-size: 16px; 
@@ -266,8 +286,8 @@
           border: 2px solid black;
           border-radius: 10px;
           padding: 20px;
-          width: 250px;
-          height: 150px;
+          width: 500px;
+          height: 300px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -276,6 +296,12 @@
 
         .winner-label {
           font-weight: bold;
+          font-size: 50px; 
+          margin-bottom: 10px;
+        }
+
+        .winner-text {
+          font-size: 30px; 
           margin-bottom: 10px;
         }
 
