@@ -11,8 +11,9 @@
 		"lint": "eslint ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/adapter-auto": "^2.1.1",
 		"@sveltejs/kit": "^1.27.4",
+		"@types/canvas-confetti": "^1.6.4",
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
 		"autoprefixer": "^10.4.16",
@@ -29,9 +30,11 @@
 	"type": "module",
 	"dependencies": {
 		"@types/pg": "^8.10.9",
+		"canvas-confetti": "^1.9.2",
 		"date-fns": "^3.0.6",
 		"html5-qrcode": "^2.3.8",
 		"pg": "^8.11.3",
-		"svelte-feather-icons": "^4.1.0"
+		"svelte-feather-icons": "^4.1.0",
+		"svelte-simple-modal": "^1.6.2"
 	}
 }
