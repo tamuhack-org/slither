@@ -112,7 +112,7 @@
   
   <div>
     <div class="grid grid-cols-3 bg-thpink mb-5 py-1">
-      <button class="ml-1 mr-auto home-icon">
+      <button class="ml-1 mr-auto">
         <a href="/" class="w-fit text-white"
           ><HomeIcon size="28" strokeWidth={2.5} /></a
         >
@@ -235,10 +235,6 @@
           padding: 20px;
         }
 
-        .home-icon {
-          background-color: blue;
-        }
-
         .input-container {
           display: flex;
           flex-direction: column;
@@ -265,21 +261,6 @@
           cursor: pointer;
           font-size: 16px; 
           transition: background-color 0.3s ease;
-        }
-
-        button {
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          background-color: red;
-          color: white;
-          cursor: pointer;
-          font-size: 16px; 
-          transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-          background-color: #555;
         }
 
         .winner-container {

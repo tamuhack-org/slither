@@ -2,7 +2,7 @@
   import Scanner from "$lib/scanner.svelte";
   import { getUnfetchedParticipant, type Participant } from "$lib/slitherTypes";
   import { historySize, scanningForOptions } from "$lib/slitherConfig";
-  import { LogOutIcon } from "svelte-feather-icons";
+  import { LogOutIcon, GiftIcon } from "svelte-feather-icons";
   import ScanModal from "$lib/scanModal.svelte";
   import { getAuthHeader } from "$lib/slitherAuth";
   import { browser } from "$app/environment";
@@ -172,7 +172,11 @@
 
 <div>
   <div class="grid grid-cols-3 bg-thpink mb-5 py-1">
-    <span />
+    <button class="ml-1 mr-auto">
+      <a href="/raffle" class="w-fit text-white"
+        ><GiftIcon size="28" strokeWidth={2.5} /></a
+      >
+    </button>
     <h1 class="text-3xl text-center font-medium font-roboto text-white">
       Slither
     </h1>
