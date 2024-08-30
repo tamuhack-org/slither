@@ -12,6 +12,7 @@ import { getAuthStatus } from "$lib/slitherAuth";
 // returns:
 //     status: MealCode[]
 //     dietaryRestrictions: string (containing valid JSON)
+//     mealGroup: string
 export const GET: RequestHandler = async ({ url, request }) => {
     const authStatus = await getAuthStatus(request);
     if (!authStatus.loggedIn) {
@@ -54,10 +55,10 @@ export const GET: RequestHandler = async ({ url, request }) => {
         error(500, "Error querying database");
     }
 
-    // Query for dietary restrictions
+    // Query for dietary restrictions and meal group
 
     const query2 = `
-        SELECT apps.dietary_restrictions
+        SELECT apps.dietary_restrictions, apps.meal_group
         FROM user_user u
         JOIN application_application apps ON u.id = apps.user_id
         WHERE u.email = $1
@@ -65,9 +66,11 @@ export const GET: RequestHandler = async ({ url, request }) => {
     const values2 = [email];
 
     let dietaryRestrictions = null;
+    let mealGroup = null;
     try {
         const result = await client.query(query2, values2);
         dietaryRestrictions = result.rows[0].dietary_restrictions;
+        mealGroup = result.rows[0].meal_group;
         client.end();
     } catch (err) {
         console.error("Error querying database", err);
@@ -75,7 +78,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
         error(500, "Error querying database");
     }
 
-    return json({ mealScans, dietaryRestrictions });
+    return json({ mealScans, dietaryRestrictions, mealGroup });
 };
 
 // POST route to log a meal scan

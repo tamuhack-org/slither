@@ -130,7 +130,7 @@
                 <p class="text-2xl font-semibold">{scannedParticipant.lastName}</p>
                 <p>{scannedParticipant.email}</p>
                 {#if scannedParticipant.infoFetched}
-                    <p>{scannedParticipant.wares} Hacker</p>
+                    <!-- <p>{scannedParticipant.wares} Hacker</p> -->
                 {/if}
                 <hr class="my-4 border-2 rounded-xl" />
                 
@@ -147,9 +147,15 @@
                         {:else}
                             <p class="font-bold text-3xl text-red-700">Not checked in ❌⚠</p>
                         {/if}
-                    {:else if scannedParticipant.checkinStatus === "Rejected/Waitlisted"}
+                    {:else if scannedParticipant.checkinStatus === "Rejected"}
                         {#if selectedScanningForType === "Check-in"}
-                            <p class="font-bold text-3xl text-orange-500">Rejected/Waitlisted 📋</p>
+                            <p class="font-bold text-3xl text-red-700">Rejected ⛔️</p>
+                        {:else}
+                            <p class="font-bold text-3xl text-red-700">Not checked in ❌⚠</p>
+                        {/if}
+                    {:else if scannedParticipant.checkinStatus === "Waitlisted"}
+                        {#if selectedScanningForType === "Check-in"}
+                            <p class="font-bold text-3xl text-orange-500">Waitlisted 📋</p>
                         {:else}
                             <p class="font-bold text-3xl text-red-700">Not checked in ❌⚠</p>
                         {/if}
@@ -177,6 +183,7 @@
                         {:else}
                             <p class="mt-4">Dietary restrictions: <span class="font-bold">{scannedParticipant.dietaryRestrictions}</span></p>
                         {/if}
+                        <p class="mt-4">Meal group: <span class="font-bold">{scannedParticipant.mealGroup}</span></p>
                         <button on:click={scanMeal} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
                             {#if postFetching}
                                 <LoaderIcon class="animate-spin mx-auto" size="32" />

@@ -93,6 +93,7 @@
       // in case the fetch took so long that the user scanned another QR code
       scannedParticipant.mealScans = responseData.mealScans;
       scannedParticipant.dietaryRestrictions = responseData.dietaryRestrictions;
+      scannedParticipant.mealGroup = responseData.mealGroup;
     }
   }
 

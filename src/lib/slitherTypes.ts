@@ -1,12 +1,12 @@
 
-export type CheckinStatus = "Under Review" | "Rejected/Waitlisted" | "Admitted" | "Confirmed" | "Declined" | "Checked In" | "Expired";
+export type CheckinStatus = "Under Review" | "Rejected" | "Admitted" | "Confirmed" | "Declined" | "Checked In" | "Waitlisted";
 
 export function getCheckinStatus(statusChar: string): CheckinStatus {
     switch (statusChar) {
         case "P":
             return "Under Review";
         case "R":
-            return "Rejected/Waitlisted";
+            return "Rejected";
         case "A":
             return "Admitted";
         case "C":
@@ -16,7 +16,7 @@ export function getCheckinStatus(statusChar: string): CheckinStatus {
         case "I":
             return "Checked In";
         case "E":
-            return "Expired";
+            return "Waitlisted";
         default:
             throw new Error("Invalid status character");
     }
@@ -68,6 +68,7 @@ export type Participant = {
     lastWorkshopScan: Date | null;
     mealScans: MealCode[];
     dietaryRestrictions: string;
+    mealGroup: string;
 };
 
 export function getUnfetchedParticipant(email: string): Participant {
@@ -83,6 +84,7 @@ export function getUnfetchedParticipant(email: string): Participant {
         lastWorkshopScan: null,
         mealScans: [],
         dietaryRestrictions: "[]",
+        mealGroup: "",
     };
 }
 
