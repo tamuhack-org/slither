@@ -38,18 +38,18 @@ export const GET: RequestHandler = async ({ url, request }) => {
     });
     client.connect();
 
-    // const query = `
-    //     SELECT apps.status, apps.wares, apps.first_name, apps.last_name
-    //     FROM user_user u
-    //     JOIN application_application apps ON u.id = apps.user_id
-    //     WHERE u.email = $1
-    // `;
     const query = `
-        SELECT apps.status, apps.first_name, apps.last_name
+        SELECT apps.status, apps.wares, apps.first_name, apps.last_name
         FROM user_user u
         JOIN application_application apps ON u.id = apps.user_id
         WHERE u.email = $1
     `;
+    // const query = `
+    //     SELECT apps.status, apps.first_name, apps.last_name
+    //     FROM user_user u
+    //     JOIN application_application apps ON u.id = apps.user_id
+    //     WHERE u.email = $1
+    // `;
     const values = [email];
 
     let checkinStatus = null;
@@ -58,9 +58,9 @@ export const GET: RequestHandler = async ({ url, request }) => {
     let lastName = null;
     try {
         const result = await client.query(query, values);
-        // const { status: statusChar, wares: waresCode } = result.rows[0];
-        const { status: statusChar } = result.rows[0];
-        const waresCode = "SW";
+        const { status: statusChar, wares: waresCode } = result.rows[0];
+        // const { status: statusChar } = result.rows[0];
+        // const waresCode = "SW";
         checkinStatus = getCheckinStatus(statusChar);
         wares = getWares(waresCode);
         firstName = result.rows[0].first_name;

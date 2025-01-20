@@ -130,7 +130,7 @@
                 <p class="text-2xl font-semibold">{scannedParticipant.lastName}</p>
                 <p>{scannedParticipant.email}</p>
                 {#if scannedParticipant.infoFetched}
-                    <!-- <p>{scannedParticipant.wares} Hacker</p> -->
+                    <p><span class="font-bold">{scannedParticipant.wares}</span> Hacker</p>
                 {/if}
                 <hr class="my-4 border-2 rounded-xl" />
                 
