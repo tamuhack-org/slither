@@ -1,6 +1,7 @@
 <script lang="ts">
   import Scanner from "$lib/scanner.svelte";
   import { getUnfetchedParticipant, type Participant } from "$lib/slitherTypes";
+  import { AUTHORIZED_STAFF } from "$lib/authorizedStaff";
   import { historySize, scanningForOptions } from "$lib/slitherConfig";
   import { LogOutIcon, GiftIcon } from "svelte-feather-icons";
   import ScanModal from "$lib/scanModal.svelte";
@@ -16,6 +17,10 @@
   let historyModalOpen = false;
   let scannedParticipant: Participant | null = null;
   let scannedParticipantHistory: Participant[] = [];
+
+function getAuthorizedStaff(email: string): Participant | null {
+    return AUTHORIZED_STAFF.find(staff => staff.email.toLowerCase() === email.toLowerCase()) || null;
+}
 
   async function fetchLoggedIn() {
     const response = await fetch("/api/auth/verify", {
@@ -156,6 +161,19 @@
   function onScan(email: string) {
     if (scanModalOpen || historyModalOpen) {
       return;
+    }
+
+    // Authorized Judge/Mentor Check
+    const authorizedPerson = getAuthorizedStaff(email);
+    if (authorizedPerson) {
+        scannedParticipant = authorizedPerson;
+        scannedParticipantHistory.push(authorizedPerson);
+        if (scannedParticipantHistory.length > historySize) {
+            scannedParticipantHistory.shift();
+        }
+        scannedParticipantHistory = scannedParticipantHistory;
+        scanModalOpen = true;
+        return;  // Skip the Obos fetch
     }
 
     scannedParticipant = getUnfetchedParticipant(email);
