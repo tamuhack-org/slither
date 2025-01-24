@@ -133,6 +133,10 @@
                     <p><span class="font-bold">{scannedParticipant.wares}</span> Hacker</p>
                 {/if}
                 <hr class="my-4 border-2 rounded-xl" />
+
+                {#if scannedParticipant.mealGroup === "Judge/Mentor"}
+                    <p class="font-bold text-2xl text-green-700 text-center mt-4">This person is a Judge/Mentor</p>
+                {:else}
                 
                 {#if scannedParticipant.failedToFetch}
                     <p class="text-red-700 font-bold text-xl">Failed to fetch participant info!</p>
@@ -172,27 +176,27 @@
                                 Check In
                             {/if}
                         </button>
-                    {:else if selectedScanningForType === "Meal"}
-                        {#if scannedParticipant.mealScans.includes(getMealCode(selectedScanningForOption))}
-                            <p class="font-bold text-xl text-red-700 mt-4">Participant has already scanned for this meal ⚠</p>
-                        {:else}
-                            <p class="mt-4">No scan for this meal yet</p>
-                        {/if}
-                        {#if scannedParticipant.dietaryRestrictions === "[]"}
-                            <p class="mt-4">No dietary restrictions</p>
-                        {:else}
-                            <p class="mt-4">Dietary restrictions: <span class="font-bold">{scannedParticipant.dietaryRestrictions}</span></p>
-                        {/if}
-                        <p class="mt-4">Meal group: <span class="font-bold">{scannedParticipant.mealGroup}</span></p>
-                        <button on:click={scanMeal} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
-                            {#if postFetching}
-                                <LoaderIcon class="animate-spin mx-auto" size="32" />
-                            {:else if scanDone}
-                                Log Successful!
+                        {:else if selectedScanningForType === "Meal"}
+                            {#if scannedParticipant.mealScans.includes(getMealCode(selectedScanningForOption))}
+                                <p class="font-bold text-xl text-red-700 mt-4">Participant has already scanned for this meal ⚠</p>
                             {:else}
-                                Log Meal
+                                <p class="mt-4">No scan for this meal yet</p>
                             {/if}
-                        </button>
+                            {#if scannedParticipant.dietaryRestrictions === "[]"}
+                                <p class="mt-4">No dietary restrictions</p>
+                            {:else}
+                                <p class="mt-4">Dietary restrictions: <span class="font-bold">{scannedParticipant.dietaryRestrictions}</span></p>
+                            {/if}
+                            <p class="mt-4">Meal group: <span class="font-bold">{scannedParticipant.mealGroup}</span></p>
+                            <button on:click={scanMeal} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
+                                {#if postFetching}
+                                    <LoaderIcon class="animate-spin mx-auto" size="32" />
+                                {:else if scanDone}
+                                    Log Successful!
+                                {:else}
+                                    Log Meal
+                                {/if}
+                            </button>
                     {:else if selectedScanningForType === "Workshop"}
                         <p>Last workshop scan:
                             {#if scannedParticipant.lastWorkshopScan === null}
@@ -217,6 +221,8 @@
                     <p class="animate-pulse">Fetching participant info...</p>
                     <LoaderIcon class="animate-spin" />
                 {/if}
+            {/if}
+
             {/if}
 
         </div>
