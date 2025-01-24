@@ -234,6 +234,12 @@ export const AUTHORIZED_STAFF: Participant[] = [
         checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
         dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
     },
+    {
+      email: "saurabh.salunkhe81@gmail.com", firstName: "Saurabh", lastName: "Salunkhe",
+      checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+      dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+  },
+
     //////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////
