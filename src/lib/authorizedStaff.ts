@@ -259,6 +259,11 @@ email: "nathanlin527@gmail.com", firstName: "Shruti", lastName: "Matthews",
 checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
 dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
 },
+{
+   email: "s02@tamu.edu", firstName: "Sujith", lastName: "Julakanti",
+   checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+   dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+   },
 
     //////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////
