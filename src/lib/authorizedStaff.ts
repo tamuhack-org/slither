@@ -234,6 +234,37 @@ export const AUTHORIZED_STAFF: Participant[] = [
         checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
         dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
     },
+    {
+      email: "saurabh.salunkhe81@gmail.com", firstName: "Saurabh", lastName: "Salunkhe",
+      checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+      dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+  },
+  {
+   email: "AthulJohnKurian@tamu.edu", firstName: "Athul", lastName: "John-Kurian",
+   checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+   dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+},
+{
+ email: "Kanishk.chhabra@tamu.edu", firstName: "Kanishk", lastName: "Chhabra",
+ checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+ dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+},
+{
+email: "shrutisusan@tamu.edu", firstName: "Shruti", lastName: "Matthews",
+checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+},
+{
+email: "nathanlin527@gmail.com", firstName: "Shruti", lastName: "Matthews",
+checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+},
+{
+   email: "s02@tamu.edu", firstName: "Sujith", lastName: "Julakanti",
+   checkinStatus: "Checked In", infoFetched: true, mealScans: [], lastWorkshopScan: null,
+   dietaryRestrictions: "[]", mealGroup: "Judge/Mentor", failedToFetch: false, wares: "Hardware"
+   },
+
     //////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////
