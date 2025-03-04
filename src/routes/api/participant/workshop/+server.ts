@@ -4,6 +4,7 @@ import pg from "pg";
 const { Client } = pg;
 import { OBOS_DATABASE_URL } from "$env/static/private";
 import { getAuthStatus } from "$lib/slitherAuth";
+import { ouroborosURL } from "$lib/slitherConfig";
 
 // GET route to get the time of a participant's most recent workshop scan
 // params:
@@ -33,7 +34,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
     });
     client.connect();
 
-    // Query for meal scans
+    // Query for workshop scans
 
     const query = `
         SELECT wkshp.timestamp
@@ -81,30 +82,21 @@ export const POST: RequestHandler = async ({ url, request }) => {
         error(400, "No email provided");
     }
 
-    const client = new Client({
-        connectionString: OBOS_DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-    client.connect();
-
-    const query = `
-        INSERT INTO volunteer_workshopevent (timestamp, user_id)
-        VALUES (
-            NOW(),
-            (SELECT id FROM user_user WHERE email = $1)
-        )
-    `;
-    const values = [email];
-
     try {
-        await client.query(query, values);
-        client.end();
+        const response = await fetch(ouroborosURL + "/api/volunteer/workshops", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": request.headers.get("Authorization") || "",
+                },
+                body: JSON.stringify({ email }),
+            });
+        if (response.status !== 200) {
+            error(response.status, "Error in Ouroboros API call");
+        }
     } catch (err) {
-        console.error("Error querying database", err);
-        client.end();
-        error(500, "Error querying database");
+        console.error("Error in Ouroboros API call", err);
+        error(500, "Error in Ouroboros API call");
     }
 
     return json({});

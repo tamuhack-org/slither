@@ -6,6 +6,8 @@ const { Client } = pg;
 import { getCheckinStatus, type CheckinStatus, getWares } from "$lib/slitherTypes";
 import { OBOS_DATABASE_URL } from "$env/static/private";
 import { getAuthStatus } from "$lib/slitherAuth";
+import { ouroborosURL } from "$lib/slitherConfig";
+
 
 // GET route to get a participant's checkin status
 // params:
@@ -95,30 +97,21 @@ export const POST: RequestHandler = async ({ url, request }) => {
         error(400, "No email provided");
     }
 
-    const client = new Client({
-        connectionString: OBOS_DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-    client.connect();
-
-    const query = `
-        UPDATE application_application
-        SET status = 'I'
-        FROM user_user u
-        WHERE u.id = application_application.user_id
-        AND u.email = $1
-    `;
-    const values = [email];
-
     try {
-        await client.query(query, values);
-        client.end();
+        const response = await fetch(ouroborosURL + "/api/volunteer/checkin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": request.headers.get("Authorization") || "",
+                },
+                body: JSON.stringify({ email }),
+            });
+        if (response.status !== 200) {
+            error(response.status, "Error in Ouroboros API call");
+        }
     } catch (err) {
-        console.error("Error querying database", err);
-        client.end();
-        error(500, "Error querying database");
+        console.error("Error in Ouroboros API call", err);
+        error(500, "Error in Ouroboros API call");
     }
 
     return json({ checkinStatus: "Checked In" as CheckinStatus });
