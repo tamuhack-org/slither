@@ -5,9 +5,13 @@
 
     const SCANNER_HTML_ID = "slither-scanner-reader";
 
-    export let onScan: (email: string) => void;
+    interface Props {
+        onScan: (email: string) => void;
+    }
 
-    let scannerOpen = false;
+    let { onScan }: Props = $props();
+
+    let scannerOpen = $state(false);
 
     function onScanSuccess(decodedText: string, decodedResult: Html5QrcodeResult) {
         let email = "";
@@ -48,7 +52,7 @@
 <div>
 
     {#if !scannerOpen}
-        <button class="text-4xl bg-thpink hover:bg-pink-400 text-white rounded-lg py-2 px-[21px] mx-auto block" on:click={() => {scannerOpen = true; makeScanner();}}>Start Scanning</button>
+        <button class="text-4xl bg-thpink hover:bg-pink-400 text-white rounded-lg py-2 px-[21px] mx-auto block" onclick={() => {scannerOpen = true; makeScanner();}}>Start Scanning</button>
     {/if}
     
     <div id={SCANNER_HTML_ID} class="w-full max-w-2xl mx-auto"></div>

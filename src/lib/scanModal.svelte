@@ -1,26 +1,37 @@
 
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { getMealCode, type Participant, type ScanningForType } from "./slitherTypes";
     import { LoaderIcon, XIcon } from "svelte-feather-icons";
     import { formatDistanceToNow } from "date-fns";
     import { suspiciousLastScanWindows } from "./slitherConfig";
     import { getAuthHeader } from "./slitherAuth";
 
-	export let modalOpen: boolean;
-    export let scannedParticipant: Participant | null;
-    export let selectedScanningForOption: string;
-    export let selectedScanningForType: ScanningForType;
+    interface Props {
+        modalOpen: boolean;
+        scannedParticipant: Participant | null;
+        selectedScanningForOption: string;
+        selectedScanningForType: ScanningForType;
+    }
 
-    let postFetching = false;
-    let scanDone = false;
-    let lastScannedParticipantEmail: string | null = null;
+    let {
+        modalOpen = $bindable(),
+        scannedParticipant = $bindable(),
+        selectedScanningForOption,
+        selectedScanningForType
+    }: Props = $props();
+
+    let postFetching = $state(false);
+    let scanDone = $state(false);
+    let lastScannedParticipantEmail: string | null = $state(null);
     let lastSelectedScanningForOption: string | null = null;
-    $: {
+    run(() => {
         if (scannedParticipant !== null && (scannedParticipant.email !== lastScannedParticipantEmail || selectedScanningForOption !== lastSelectedScanningForOption)) {
             lastScannedParticipantEmail = scannedParticipant.email;
             scanDone = false;
         }
-    }
+    });
 
     async function checkIn() {
         if (scannedParticipant === null || postFetching || scanDone) {
@@ -117,7 +128,7 @@
 
 <div class="z-10 animate-fadeIn fixed left-0 top-0 w-full h-full overflow-auto bg-[#00000088] {modalOpen ? "block" : "hidden"}">
     <div class="animate-popIn bg-white rounded-xl fixed left-auto right-auto top-auto bottom-0 m-4 p-4 w-11/12 shadow-md max-w-2xl">
-        <button class="ml-auto block mb-3" on:click={() => modalOpen = false}><XIcon size="36" /></button>
+        <button class="ml-auto block mb-3" onclick={() => modalOpen = false}><XIcon size="36" /></button>
 
         <div>
             {#if scannedParticipant === null}
@@ -171,7 +182,7 @@
                     {/if}
 
                     {#if selectedScanningForType === "Check-in" && scannedParticipant.checkinStatus !== "Checked In"}
-                        <button on:click={checkIn} class="block w-full py-2 mt-6 rounded-md bg-blue-400 text-white font-bold text-2xl">
+                        <button onclick={checkIn} class="block w-full py-2 mt-6 rounded-md bg-blue-400 text-white font-bold text-2xl">
                             {#if postFetching}
                                 <LoaderIcon class="animate-spin mx-auto" size="32" />
                             {:else}
@@ -190,7 +201,7 @@
                                 <p class="mt-4">Dietary restrictions: <span class="font-bold">{scannedParticipant.dietaryRestrictions}</span></p>
                             {/if}
                             <p class="mt-4">Meal group: <span class="font-bold">{scannedParticipant.mealGroup}</span></p>
-                            <button on:click={scanMeal} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
+                            <button onclick={scanMeal} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
                                 {#if postFetching}
                                     <LoaderIcon class="animate-spin mx-auto" size="32" />
                                 {:else if scanDone}
@@ -200,28 +211,28 @@
                                 {/if}
                             </button>
                     {:else if selectedScanningForType === "Workshop"}
-                        {#if scannedParticipant.mealGroup === "Judge/Mentor" || scannedParticipant.isJudgeMentor}
-                            <p class="font-bold text-xl text-orange-600 text-center mt-4">Judges and mentors don't need to scan for workshops</p>
-                        {:else}
-                            <p>Last workshop scan:
-                                {#if scannedParticipant.lastWorkshopScan === null}
-                                    never
-                                {:else if workshopScanIsSuspiciouslyRecent()}
-                                    <span class="font-bold text-red-700">{formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })} ⚠</span>
-                                {:else}
-                                    {formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })}
-                                {/if}
-                            </p>
-                            <button on:click={scanWorkshop} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
-                                {#if postFetching}
-                                    <LoaderIcon class="animate-spin mx-auto" size="32" />
-                                {:else if scanDone}
-                                    Log Successful!
-                                {:else}
-                                    Log Workshop
-                                {/if}
-                            </button>
-                        {/if}
+{#if scannedParticipant.mealGroup === "Judge/Mentor" || scannedParticipant.isJudgeMentor}
+    <p class="font-bold text-xl text-orange-600 text-center mt-4">Judges and mentors don't need to scan for workshops</p>
+{:else}
+    <p>Last workshop scan:
+        {#if scannedParticipant.lastWorkshopScan === null}
+            never
+        {:else if workshopScanIsSuspiciouslyRecent()}
+            <span class="font-bold text-red-700">{formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })} ⚠</span>
+        {:else}
+            {formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })}
+        {/if}
+    </p>
+    <button onclick={scanWorkshop} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
+        {#if postFetching}
+            <LoaderIcon class="animate-spin mx-auto" size="32" />
+        {:else if scanDone}
+            Log Successful!
+        {:else}
+            Log Workshop
+        {/if}
+    </button>
+{/if}
                     {/if}
                 {:else}
                     <p class="animate-pulse">Fetching participant info...</p>
