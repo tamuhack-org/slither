@@ -3,15 +3,19 @@
     import { XIcon, InfoIcon } from "svelte-feather-icons";
     import type { Participant } from "./slitherTypes";
 
-	export let modalOpen: boolean;
-    export let scannedParticipantHistory: Participant[];
-    export let onHistoricalScan: (participant: Participant) => void;
+    interface Props {
+        modalOpen: boolean;
+        scannedParticipantHistory: Participant[];
+        onHistoricalScan: (participant: Participant) => void;
+    }
+
+    let { modalOpen = $bindable(), scannedParticipantHistory, onHistoricalScan }: Props = $props();
 
 </script>
 
 <div class="z-10 animate-fadeIn fixed left-0 top-0 w-full h-full overflow-auto bg-[#00000088] {modalOpen ? "block" : "hidden"}">
     <div class="animate-popIn bg-white rounded-xl fixed left-auto right-auto top-auto bottom-0 m-4 p-4 w-11/12 shadow-md max-w-2xl">
-        <button class="ml-auto block" on:click={() => modalOpen = false}><XIcon size="36" /></button>
+        <button class="ml-auto block" onclick={() => modalOpen = false}><XIcon size="36" /></button>
 
         <div>
             <p class="text-2xl mb-3">Scan History:</p>
@@ -22,7 +26,7 @@
                             <p class="font-semibold">{historicalScan.firstName} {historicalScan.lastName}</p>
                             <p class="text-sm">{historicalScan.email}</p>
                         </div>
-                        <button on:click={() => {onHistoricalScan(historicalScan);}} class="p-1"><InfoIcon /></button>
+                        <button onclick={() => {onHistoricalScan(historicalScan);}} class="p-1"><InfoIcon /></button>
                     </div>
                 {/each}
             </div>

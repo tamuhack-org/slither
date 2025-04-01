@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
     import Scanner from "$lib/scanner.svelte";
     import { getUnfetchedParticipant, type Participant, type WorkshopScan } from "$lib/slitherTypes";
     import { historySize, scanningForOptions } from "$lib/slitherConfig";
@@ -11,23 +13,23 @@
   
 
     let showModal = false;
-    let authorized = false;
-    let fetchingLoggedIn = true;
-    let scans: WorkshopScan[] = [];
-    let timeWindowStartString: string = "";
-    let timeWindowEndString: string = "";
-    let timeWindowStart: Date | null = null;
-    let timeWindowEnd: Date | null = null;
-    let winner: WorkshopScan | null = null;
+    let authorized = $state(false);
+    let fetchingLoggedIn = $state(true);
+    let scans: WorkshopScan[] = $state([]);
+    let timeWindowStartString: string = $state("");
+    let timeWindowEndString: string = $state("");
+    let timeWindowStart: Date | null = $state(null);
+    let timeWindowEnd: Date | null = $state(null);
+    let winner: WorkshopScan | null = $state(null);
 
-    $: {
+    run(() => {
         if (timeWindowStartString !== "") {
             timeWindowStart = new Date(timeWindowStartString);
         }
         if (timeWindowEndString !== "") {
             timeWindowEnd = new Date(timeWindowEndString);
         }
-    }
+    });
   
     async function fetchLoggedIn() {
       const response = await fetch("/api/auth/verify", {
@@ -74,7 +76,7 @@
         });
     }
 
-    $: {
+    run(() => {
         for (let i = 0; i < scans.length; i++) {
             if (scans[i].timestamp >= timeWindowStart && scans[i].timestamp <= timeWindowEnd) {
                 scans[i].selected = true;
@@ -82,7 +84,7 @@
                 scans[i].selected = false;
             }
         }
-    }
+    });
 
     function pickWinner() {
         let potentialWinners: WorkshopScan[] = [];
@@ -152,7 +154,7 @@
               <label for="second-time">End Time:</label>
               <input type="datetime-local" id="second-time" bind:value={timeWindowEndString} />
               <div class="button-container">
-                <button class="winner-button" on:click={pickWinner}>Pick A Winner</button>
+                <button class="winner-button" onclick={pickWinner}>Pick A Winner</button>
               </div>
             </div>
             <div class="winner-container">

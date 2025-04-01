@@ -2,10 +2,10 @@
   import { browser } from "$app/environment";
   import { getAuthHeader } from "$lib/slitherAuth";
 
-  let email = "";
-  let password = "";
-  let wrongCredentials = false;
-  let fetching = false;
+  let email = $state("");
+  let password = $state("");
+  let wrongCredentials = $state(false);
+  let fetching = $state(false);
 
   // If the user is already logged in, redirect them to the home page
   async function checkAlreadyLoggedIn() {
@@ -86,11 +86,11 @@
     name="password"
     placeholder="Password"
     class="px-1 mt-1 border-2 block w-full text-lg border-gray-300 rounded-md py-2 font-sans"
-    on:keydown={handleKeyDown}
+    onkeydown={handleKeyDown}
   />
 
   <button
-    on:click={login}
+    onclick={login}
     type="submit"
     class="mt-16 mx-auto block text-xl bg-thpink hover:bg-pink-400 text-white font-semibold w-full py-2 rounded-lg {fetching
       ? 'cursor-wait'
