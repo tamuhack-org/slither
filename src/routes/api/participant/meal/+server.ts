@@ -38,8 +38,8 @@ export const GET: RequestHandler = async ({ url, request }) => {
             error(response.status, "Error in Ouroboros API call");
         }
 
-        const data = await response.json()
-        return json({...data})
+        const data = await response.json();
+        return json({...data});
     } catch (err) {
         console.error("Error in Ouroboros API call", err);
         return json({ error: 'Error in Ouroboros API call' }, { status: 500 });

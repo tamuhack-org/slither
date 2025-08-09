@@ -1,8 +1,6 @@
 
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import pg from "pg";
-const { Client } = pg;
 import { getCheckinStatus, type CheckinStatus, getWares } from "$lib/slitherTypes";
 import { getAuthStatus } from "$lib/slitherAuth";
 import { ouroborosURL } from "$lib/slitherConfig";
@@ -16,7 +14,7 @@ import { ouroborosURL } from "$lib/slitherConfig";
 //     wares: Wares
 //     firstName: string
 //     lastName: string
-export const GET: RequestHandler = async ({ fetch, url, request }) => {
+export const GET: RequestHandler = async ({ url, request }) => {
     const authStatus = await getAuthStatus(request);
     if (!authStatus.loggedIn) {
         return json({ "error": "Not logged in" }, { status: 401 });
@@ -44,8 +42,8 @@ export const GET: RequestHandler = async ({ fetch, url, request }) => {
         }
 
         const { checkinStatus: checkinChar, wares: waresCode, first_name: firstName, last_name: lastName } = await response.json();
-        const checkinStatus = getCheckinStatus(checkinChar)
-        const wares = getWares(waresCode)
+        const checkinStatus = getCheckinStatus(checkinChar);
+        const wares = getWares(waresCode);
         return json({
             checkinStatus,
             wares,
