@@ -1,9 +1,6 @@
 
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import pg from "pg";
-const { Client } = pg;
-import { OBOS_DATABASE_URL } from "$env/static/private";
 import { getAuthStatus } from "$lib/slitherAuth";
 import { ouroborosURL } from "$lib/slitherConfig";
 
@@ -14,7 +11,7 @@ import { ouroborosURL } from "$lib/slitherConfig";
 //     status: MealCode[]
 //     dietaryRestrictions: string (containing valid JSON)
 //     mealGroup: string
-export const GET: RequestHandler = async ({ fetch, url, request }) => {
+export const GET: RequestHandler = async ({ url, request }) => {
     const authStatus = await getAuthStatus(request);
     if (!authStatus.loggedIn) {
         return json({ "error": "Not logged in" }, { status: 401 });
@@ -74,31 +71,21 @@ export const POST: RequestHandler = async ({ url, request }) => {
         error(400, "No meal code provided");
     }
 
-    const client = new Client({
-        connectionString: OBOS_DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-    client.connect();
-
-    const query = `
-        INSERT INTO volunteer_foodevent (timestamp, user_id, meal)
-        VALUES (
-            NOW(),
-            (SELECT id FROM user_user WHERE email = $1),
-            $2
-        )
-    `;
-    const values = [email, mealCode];
-
     try {
-        await client.query(query, values);
-        client.end();
+        const response = await fetch(`${ouroborosURL}/api/volunteer/food`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": request.headers.get("Authorization") || "",
+            },
+            body: JSON.stringify({ email, meal: mealCode }),
+        });
+        if (response.status !== 200) {
+            error(response.status, "Error in Ouroboros API call");
+        }
     } catch (err) {
-        console.error("Error querying database", err);
-        client.end();
-        error(500, "Error querying database");
+        console.error("Error in Ouroboros API call", err);
+        return json({ error: 'Error in Ouroboros API call' }, { status: 500 });
     }
 
     return json({});
