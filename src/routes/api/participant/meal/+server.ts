@@ -1,4 +1,3 @@
-
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import pg from "pg";
@@ -37,7 +36,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
     client.connect();
 
     // Query for meal scans
-
     const query = `
         SELECT food.meal
         FROM user_user u
@@ -56,7 +54,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
     }
 
     // Query for dietary restrictions and meal group
-
     const query2 = `
         SELECT apps.dietary_restrictions, apps.meal_group
         FROM user_user u
@@ -69,8 +66,39 @@ export const GET: RequestHandler = async ({ url, request }) => {
     let mealGroup = null;
     try {
         const result = await client.query(query2, values2);
-        dietaryRestrictions = result.rows[0].dietary_restrictions;
-        mealGroup = result.rows[0].meal_group;
+        if (result.rows.length > 0) {
+            dietaryRestrictions = result.rows[0].dietary_restrictions;
+            mealGroup = result.rows[0].meal_group;
+        } else {
+            // Check if this is a judge/mentor (they don't have dietary restrictions in our system)
+            const judgeQuery = `
+                SELECT j.name
+                FROM user_user u
+                JOIN judgesmentors_judge j ON u.id = j.user_id
+                WHERE u.email = $1
+            `;
+            const judgeResult = await client.query(judgeQuery, values);
+            
+            if (judgeResult.rows.length > 0) {
+                console.log(`Judge ${judgeResult.rows[0].name} accessing meals - no dietary restrictions`);
+                dietaryRestrictions = null;
+                mealGroup = "Judge";
+            } else {
+                const mentorQuery = `
+                    SELECT m.name
+                    FROM user_user u
+                    JOIN judgesmentors_mentor m ON u.id = m.user_id
+                    WHERE u.email = $1
+                `;
+                const mentorResult = await client.query(mentorQuery, values);
+                
+                if (mentorResult.rows.length > 0) {
+                    console.log(`Mentor ${mentorResult.rows[0].name} accessing meals - no dietary restrictions`);
+                    dietaryRestrictions = null;
+                    mealGroup = "Mentor";
+                }
+            }
+        }
         client.end();
     } catch (err) {
         console.error("Error querying database", err);

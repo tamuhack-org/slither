@@ -30,10 +30,12 @@
 	"type": "module",
 	"dependencies": {
 		"@types/pg": "^8.10.9",
+		"better-sqlite3": "^12.2.0",
 		"canvas-confetti": "^1.9.2",
 		"date-fns": "^3.0.6",
 		"html5-qrcode": "^2.3.8",
 		"pg": "^8.11.3",
+		"sqlite3": "^5.1.7",
 		"svelte-feather-icons": "^4.1.0",
 		"svelte-simple-modal": "^1.6.2"
 	}

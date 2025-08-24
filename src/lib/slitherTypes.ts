@@ -15,6 +15,8 @@ export function getCheckinStatus(statusChar: string): CheckinStatus {
             return "Declined";
         case "I":
             return "Checked In";
+        case "CI":  // Judge/Mentor checked in status
+            return "Checked In";
         case "E":
             return "Waitlisted";
         default:

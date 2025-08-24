@@ -1,7 +1,7 @@
 
 <script lang="ts">
     import { getMealCode, type Participant, type ScanningForType } from "./slitherTypes";
-    import { LoaderIcon, XIcon } from "svelte-feather-icons";
+    import { LoaderIcon, LogInIcon, XIcon } from "svelte-feather-icons";
     import { formatDistanceToNow } from "date-fns";
     import { suspiciousLastScanWindows } from "./slitherConfig";
     import { getAuthHeader } from "./slitherAuth";
@@ -164,6 +164,7 @@
                             <p class="font-bold text-3xl text-red-700">Not checked in ❌⚠</p>
                         {/if}
                     {:else}
+                        console.log(scannedParticipant);
                         <p>Wacky checkin status... how did this person get a QR code???</p>
                         <p>Checkin status: {scannedParticipant.checkinStatus}</p>
                     {/if}
