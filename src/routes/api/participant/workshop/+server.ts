@@ -1,8 +1,5 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import pg from "pg";
-const { Client } = pg;
-import { OBOS_DATABASE_URL } from "$env/static/private";
 import { getAuthStatus } from "$lib/slitherAuth";
 import { ouroborosURL } from "$lib/slitherConfig";
 
@@ -26,40 +23,25 @@ export const GET: RequestHandler = async ({ url, request }) => {
         error(400, "No email provided");
     }
 
-    const client = new Client({
-        connectionString: OBOS_DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-    client.connect();
-
-    // Query for workshop scans
-
-    const query = `
-        SELECT wkshp.timestamp
-        FROM user_user u
-        JOIN volunteer_workshopevent wkshp ON u.id = wkshp.user_id
-        WHERE u.email = $1
-        ORDER BY wkshp.timestamp DESC
-        LIMIT 1
-    `;
-    const values = [email];
-
-    let lastWorkshopScan = null;
     try {
-        const result = await client.query(query, values);
-        if (result.rows.length > 0) {
-            lastWorkshopScan = result.rows[0].timestamp;
+        const response = await fetch(`${ouroborosURL}/api/volunteer/workshops?email=${email}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": request.headers.get("Authorization") || "",
+            },
+        });
+        if (response.status !== 200) {
+            error(response.status, "Error in Ouroboros API call");
         }
-        client.end();
-    } catch (err) {
-        console.error("Error querying database", err);
-        client.end();
-        error(500, "Error querying database");
-    }
 
-    return json({ lastWorkshopScan });
+        const { lastWorkshopScan } = await response.json();
+        return json({ lastWorkshopScan });
+        
+    } catch (err) {
+        console.error("Error in Ouroboros API call", err);
+        return json({ error: 'Error in Ouroboros API call' }, { status: 500 });
+    }
 };
 
 // POST route to log a workshop scan

@@ -1,10 +1,8 @@
 
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import pg from "pg";
-const { Client } = pg;
-import { OBOS_DATABASE_URL } from "$env/static/private";
 import { getAuthStatus } from "$lib/slitherAuth";
+import { ouroborosURL } from "$lib/slitherConfig";
 
 // GET route to get all of a participant's meal scans, and their dietary restrictions
 // params:
@@ -28,57 +26,24 @@ export const GET: RequestHandler = async ({ url, request }) => {
         error(400, "No email provided");
     }
 
-    const client = new Client({
-        connectionString: OBOS_DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-    client.connect();
-
-    // Query for meal scans
-
-    const query = `
-        SELECT food.meal
-        FROM user_user u
-        JOIN volunteer_foodevent food ON u.id = food.user_id
-        WHERE u.email = $1
-    `;
-    const values = [email];
-
-    let mealScans = null;
     try {
-        const result = await client.query(query, values);
-        mealScans = result.rows.map(row => row.meal);
+        const response = await fetch(`${ouroborosURL}/api/volunteer/food?email=${email}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": request.headers.get("Authorization") || "",
+            },
+        });
+        if (response.status !== 200) {
+            error(response.status, "Error in Ouroboros API call");
+        }
+
+        const data = await response.json();
+        return json({...data});
     } catch (err) {
-        console.error("Error querying database", err);
-        error(500, "Error querying database");
+        console.error("Error in Ouroboros API call", err);
+        return json({ error: 'Error in Ouroboros API call' }, { status: 500 });
     }
-
-    // Query for dietary restrictions and meal group
-
-    const query2 = `
-        SELECT apps.dietary_restrictions, apps.meal_group
-        FROM user_user u
-        JOIN application_application apps ON u.id = apps.user_id
-        WHERE u.email = $1
-    `;
-    const values2 = [email];
-
-    let dietaryRestrictions = null;
-    let mealGroup = null;
-    try {
-        const result = await client.query(query2, values2);
-        dietaryRestrictions = result.rows[0].dietary_restrictions;
-        mealGroup = result.rows[0].meal_group;
-        client.end();
-    } catch (err) {
-        console.error("Error querying database", err);
-        client.end();
-        error(500, "Error querying database");
-    }
-
-    return json({ mealScans, dietaryRestrictions, mealGroup });
 };
 
 // POST route to log a meal scan
@@ -106,31 +71,21 @@ export const POST: RequestHandler = async ({ url, request }) => {
         error(400, "No meal code provided");
     }
 
-    const client = new Client({
-        connectionString: OBOS_DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-    client.connect();
-
-    const query = `
-        INSERT INTO volunteer_foodevent (timestamp, user_id, meal)
-        VALUES (
-            NOW(),
-            (SELECT id FROM user_user WHERE email = $1),
-            $2
-        )
-    `;
-    const values = [email, mealCode];
-
     try {
-        await client.query(query, values);
-        client.end();
+        const response = await fetch(`${ouroborosURL}/api/volunteer/food`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": request.headers.get("Authorization") || "",
+            },
+            body: JSON.stringify({ email, meal: mealCode }),
+        });
+        if (response.status !== 200) {
+            error(response.status, "Error in Ouroboros API call");
+        }
     } catch (err) {
-        console.error("Error querying database", err);
-        client.end();
-        error(500, "Error querying database");
+        console.error("Error in Ouroboros API call", err);
+        return json({ error: 'Error in Ouroboros API call' }, { status: 500 });
     }
 
     return json({});
