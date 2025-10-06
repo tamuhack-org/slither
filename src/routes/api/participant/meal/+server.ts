@@ -80,6 +80,7 @@ export const POST: RequestHandler = async ({ url, request }) => {
             },
             body: JSON.stringify({ email, meal: mealCode }),
         });
+        console.log("POST api/volunteer/food response", response)
         if (response.status !== 200) {
             error(response.status, "Error in Ouroboros API call");
         }
