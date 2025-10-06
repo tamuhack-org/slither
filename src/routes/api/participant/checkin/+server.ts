@@ -41,9 +41,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
             error(response.status, "Error in Ouroboros API call");
         }
 
-        const data = await response.json()
-        console.log(data)
-
         const { checkinStatus: checkinChar, wares: waresCode, first_name: firstName, last_name: lastName } = await response.json();
         const checkinStatus = getCheckinStatus(checkinChar);
         const wares = getWares(waresCode);

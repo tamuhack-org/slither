@@ -60,6 +60,7 @@ function getAuthorizedStaff(email: string): Participant | null {
       }
     );
     const responseData = await response.json();
+    console.log(responseData)
 
     if (participantEmail === scannedParticipant.email) {
       // in case the fetch took so long that the user scanned another QR code
