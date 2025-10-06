@@ -15,6 +15,6 @@ export const suspiciousLastScanWindows = {
     "Workshop": 1000 * 60 * 15,  // 15 minutes
 };
 
-export const ouroborosURL = "https://register.tamuhack.com";
+export const ouroborosURL = "https://start.tamuhack.com";
 
 export const historySize = 20;
