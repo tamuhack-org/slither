@@ -43,7 +43,7 @@ export function getMealCode(mealStr: string): MealCode {
     }
 }
 
-export type Wares = "Software" | "Hardware";
+export type Wares = "Software" | "Hardware" | "Software/Hardware not set";
 
 export function getWares(waresCode: string): Wares {
     switch (waresCode) {
@@ -52,7 +52,7 @@ export function getWares(waresCode: string): Wares {
         case "HW":
             return "Hardware";
         default:
-            throw new Error("Invalid wares code");
+            return "Software/Hardware not set";
     }
 }
 
