@@ -2,7 +2,7 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { getCheckinStatus, type CheckinStatus, getWares } from "$lib/slitherTypes";
-import { getAuthStatus, getAuthHeader } from "$lib/slitherAuth";
+import { getAuthStatus } from "$lib/slitherAuth";
 import { ouroborosURL } from "$lib/slitherConfig";
 
 
@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": getAuthHeader(),
+                "Authorization": request.headers.get("Authorization") || "",
             },
         });
         if (response.status !== 200) {
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ url, request }) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": getAuthHeader(),
+                    "Authorization": request.headers.get("Authorization") || "",
                 },
                 body: JSON.stringify({ email }),
             });
