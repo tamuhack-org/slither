@@ -22,6 +22,50 @@ function getAuthorizedStaff(email: string): Participant | null {
     return AUTHORIZED_STAFF.find(staff => staff.email.toLowerCase() === email.toLowerCase()) || null;
 }
 
+async function fetchJudgeMentorInfo(email: string): Promise<Participant | null> {
+    try {
+        const urlParams = new URLSearchParams({ email });
+        const response = await fetch(
+            "/api/judge-mentor/lookup?" + urlParams.toString(),
+            {
+                headers: {
+                    Authorization: getAuthHeader(),
+                },
+            }
+        );
+        
+        if (response.status !== 200) {
+            return null;
+        }
+        
+        const data = await response.json();
+        
+        if (data.isJudgeMentor) {
+            return {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: email,
+                infoFetched: false,  
+                failedToFetch: false,
+                checkinStatus: "Under Review",  // will be updated by fetchScannedParticipantInfo
+                wares: "Software",
+                lastWorkshopScan: null,
+                mealScans: [],
+                dietaryRestrictions: "[]",
+                mealGroup: "Judge/Mentor",
+                isJudgeMentor: true,
+                role: data.role,
+                track: data.track
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.error("Error fetching judge/mentor info:", error);
+        return null;
+    }
+}
+
   async function fetchLoggedIn() {
     const response = await fetch("/api/auth/verify", {
       method: "POST",
@@ -158,12 +202,12 @@ function getAuthorizedStaff(email: string): Participant | null {
     }
   }
 
-  function onScan(email: string) {
+  async function onScan(email: string) {
     if (scanModalOpen || historyModalOpen) {
       return;
     }
 
-    // Authorized Judge/Mentor Check
+    // First check hardcoded authorized staff (for backwards compatibility) - will get rid of this in future
     const authorizedPerson = getAuthorizedStaff(email);
     if (authorizedPerson) {
         scannedParticipant = authorizedPerson;
@@ -176,6 +220,16 @@ function getAuthorizedStaff(email: string): Participant | null {
         return;  // Skip the Obos fetch
     }
 
+    // Check dynamic judge/mentor from Ouroboros
+    const judgeMentorInfo = await fetchJudgeMentorInfo(email);
+    if (judgeMentorInfo) {
+        scannedParticipant = judgeMentorInfo;
+        scanModalOpen = true;
+        fetchScannedParticipantInfo(); 
+        return;
+    }
+
+    // Regular participant processing
     scannedParticipant = getUnfetchedParticipant(email);
     scanModalOpen = true;
     fetchScannedParticipantInfo();

@@ -15,6 +15,8 @@ export function getCheckinStatus(statusChar: string): CheckinStatus {
             return "Declined";
         case "I":
             return "Checked In";
+        case "CI": //this is for judges and mentors
+            return "Checked In";
         case "E":
             return "Waitlisted";
         default:
@@ -69,6 +71,11 @@ export type Participant = {
     mealScans: MealCode[];
     dietaryRestrictions: string;
     mealGroup: string;
+    
+    // Judge/Mentor specific fields
+    isJudgeMentor?: boolean;
+    role?: "judge" | "mentor";
+    track?: string;
 };
 
 export function getUnfetchedParticipant(email: string): Participant {
