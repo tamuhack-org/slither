@@ -134,9 +134,11 @@
                 {/if}
                 <hr class="my-4 border-2 rounded-xl" />
 
-                {#if scannedParticipant.mealGroup === "Judge/Mentor"}
-                    <p class="font-bold text-2xl text-green-700 text-center mt-4">This person is a Judge/Mentor</p>
-                {:else}
+                {#if scannedParticipant.mealGroup === "Judge/Mentor" || scannedParticipant.isJudgeMentor}
+                    <div class="text-center mt-2 mb-4">
+                        <p class="font-bold text-lg text-green-700">🏅 {scannedParticipant.role ? scannedParticipant.role.charAt(0).toUpperCase() + scannedParticipant.role.slice(1) : "Judge/Mentor"}</p>
+                    </div>
+                {/if}
                 
                 {#if scannedParticipant.failedToFetch}
                     <p class="text-red-700 font-bold text-xl">Failed to fetch participant info!</p>
@@ -198,31 +200,33 @@
                                 {/if}
                             </button>
                     {:else if selectedScanningForType === "Workshop"}
-                        <p>Last workshop scan:
-                            {#if scannedParticipant.lastWorkshopScan === null}
-                                never
-                            {:else if workshopScanIsSuspiciouslyRecent()}
-                                <span class="font-bold text-red-700">{formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })} ⚠</span>
-                            {:else}
-                                {formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })}
-                            {/if}
-                        </p>
-                        <button on:click={scanWorkshop} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
-                            {#if postFetching}
-                                <LoaderIcon class="animate-spin mx-auto" size="32" />
-                            {:else if scanDone}
-                                Log Successful!
-                            {:else}
-                                Log Workshop
-                            {/if}
-                        </button>
+                        {#if scannedParticipant.mealGroup === "Judge/Mentor" || scannedParticipant.isJudgeMentor}
+                            <p class="font-bold text-xl text-orange-600 text-center mt-4">Judges and mentors don't need to scan for workshops</p>
+                        {:else}
+                            <p>Last workshop scan:
+                                {#if scannedParticipant.lastWorkshopScan === null}
+                                    never
+                                {:else if workshopScanIsSuspiciouslyRecent()}
+                                    <span class="font-bold text-red-700">{formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })} ⚠</span>
+                                {:else}
+                                    {formatDistanceToNow(scannedParticipant.lastWorkshopScan, { addSuffix: true })}
+                                {/if}
+                            </p>
+                            <button on:click={scanWorkshop} class="block w-full py-2 mt-6 rounded-md text-white font-bold text-2xl {scanDone ? "bg-green-600" : "bg-blue-400"}">
+                                {#if postFetching}
+                                    <LoaderIcon class="animate-spin mx-auto" size="32" />
+                                {:else if scanDone}
+                                    Log Successful!
+                                {:else}
+                                    Log Workshop
+                                {/if}
+                            </button>
+                        {/if}
                     {/if}
                 {:else}
                     <p class="animate-pulse">Fetching participant info...</p>
                     <LoaderIcon class="animate-spin" />
                 {/if}
-            {/if}
-
             {/if}
 
         </div>
