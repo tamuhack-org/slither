@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { getAuthStatus, getAuthHeader } from "$lib/slitherAuth";
+import { getAuthStatus } from "$lib/slitherAuth";
 import { ouroborosURL } from "$lib/slitherConfig";
 
 // GET route to check if an email belongs to a judge or mentor in Ouroboros
@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": getAuthHeader(),
+                "Authorization": request.headers.get("Authorization") || "",
             },
         });
 
@@ -53,7 +53,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": getAuthHeader(),
+                "Authorization": request.headers.get("Authorization") || "",
             },
         });
 
