@@ -9,14 +9,14 @@
   import { browser } from "$app/environment";
   import HistoryModal from "$lib/historyModal.svelte";
 
-  let authorized = false;
-  let fetchingLoggedIn = true;
-  let selectedScanningForOption = Object.keys(scanningForOptions)[0];
-  $: selectedScanningForType = scanningForOptions[selectedScanningForOption];
-  let scanModalOpen = false;
-  let historyModalOpen = false;
-  let scannedParticipant: Participant | null = null;
-  let scannedParticipantHistory: Participant[] = [];
+  let authorized = $state(false);
+  let fetchingLoggedIn = $state(true);
+  let selectedScanningForOption = $state(Object.keys(scanningForOptions)[0]);
+  let selectedScanningForType = $derived(scanningForOptions[selectedScanningForOption]);
+  let scanModalOpen = $state(false);
+  let historyModalOpen = $state(false);
+  let scannedParticipant: Participant | null = $state(null);
+  let scannedParticipantHistory: Participant[] = $state([]);
 
 function getAuthorizedStaff(email: string): Participant | null {
     return AUTHORIZED_STAFF.find(staff => staff.email.toLowerCase() === email.toLowerCase()) || null;
@@ -292,7 +292,7 @@ async function fetchJudgeMentorInfo(email: string): Promise<Participant | null> 
 
     <div class="flex flex-row justify-center gap-2 mb-4">
       <button
-        on:click={() => {
+        onclick={() => {
           scanModalOpen = true;
           fetchScannedParticipantInfo();
         }}
@@ -300,7 +300,7 @@ async function fetchJudgeMentorInfo(email: string): Promise<Participant | null> 
         >Re-open Last Scan</button
       >
       <button
-        on:click={() => {
+        onclick={() => {
           historyModalOpen = true;
         }}
         class="block border-[3px] border-thpink hover:border-pink-400 px-2 py-1 text-xl rounded-lg mt-5"
