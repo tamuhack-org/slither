@@ -1,4 +1,70 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-thpink: rgb(252, 148, 187);
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI,
+    Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  --font-poppins: Poppins, sans-serif;
+  --font-roboto: Roboto, sans-serif;
+
+  --animate-wiggle0: wiggle 1s ease-in-out 0.05s infinite;
+  --animate-wiggle1: wiggle 1s ease-in-out 0.1s infinite;
+  --animate-wiggle2: wiggle 1s ease-in-out 0.15s infinite;
+  --animate-wiggle3: wiggle 1s ease-in-out 0.2s infinite;
+  --animate-wiggle4: wiggle 1s ease-in-out 0.25s infinite;
+  --animate-wiggle5: wiggle 1s ease-in-out 0.3s infinite;
+  --animate-wiggle6: wiggle 1s ease-in-out 0.35s infinite;
+  --animate-wiggle7: wiggle 1s ease-in-out 0.4s infinite;
+  --animate-wiggle8: wiggle 1s ease-in-out 0.45s infinite;
+  --animate-wiggle9: wiggle 1s ease-in-out 0.5s infinite;
+  --animate-fade-in: fadeIn 0.1s;
+  --animate-pop-in: popIn 0.2s;
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      left: -20px;
+    }
+    50% {
+      left: 20px;
+    }
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes popIn {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
